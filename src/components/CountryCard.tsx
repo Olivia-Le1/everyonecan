@@ -23,10 +23,10 @@ export const CountryCard = ({ c }: { c: Country }) => (
     <p className="text-sm text-foreground/70 mt-3 leading-relaxed line-clamp-2">{c.description}</p>
     <div className="mt-5 flex items-center justify-between">
       <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/80 text-xs font-bold">
-        📚 기사 {c.articles}개
+        📚 {c.articles} articles
       </span>
       <span className="text-xs font-bold text-foreground/70 group-hover:text-pink transition-colors">
-        탐험하기 →
+        Explore →
       </span>
     </div>
   </a>
