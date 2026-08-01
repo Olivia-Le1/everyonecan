@@ -22,8 +22,9 @@ export type Database = {
           country_name: string
           created_at: string
           description: string
+          content: string | null
           id: string
-          image_url: string
+          image_url: string 
           is_keyword: boolean
           is_published: boolean
           keyword_month: string | null
@@ -40,6 +41,7 @@ export type Database = {
           country_name: string
           created_at?: string
           description: string
+          content?: string | null
           id?: string
           image_url: string
           is_keyword?: boolean
@@ -58,6 +60,7 @@ export type Database = {
           country_name?: string
           created_at?: string
           description?: string
+          content?: string | null
           id?: string
           image_url?: string
           is_keyword?: boolean
