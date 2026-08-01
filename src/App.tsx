@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound.tsx";
 import Auth from "./pages/Auth.tsx";
 import Quiz from "./pages/Quiz.tsx";
 import Admin from "./pages/Admin.tsx";
+import ArticleDetail from "./pages/ArticleDetail.tsx";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/article/:id" element={<ArticleDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
