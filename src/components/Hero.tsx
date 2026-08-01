@@ -1,7 +1,10 @@
 import worldMap from "@/assets/world-map.jpg";
 import { Link } from "react-router-dom";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
-export const Hero = () => (
+export const Hero = () => {
+  const { t } = useSiteSettings();
+  return (
   <section id="home" className="relative overflow-hidden">
     <div className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-pink-soft blur-3xl opacity-70 animate-blob" />
     <div className="pointer-events-none absolute top-40 -right-32 size-[28rem] rounded-full bg-butter blur-3xl opacity-60 animate-blob" />
