@@ -9,13 +9,29 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  if (!user) {
-    setIsAdmin(false);
-    return;
-  }
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+      setSession(s);
+      setUser(s?.user ?? null);
+    });
 
-  setIsAdmin(user.email === "l01048666065@gmail.com");
-}, [user]);
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setUser(data.session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+
+    setIsAdmin(user.email === "l01048666065@gmail.com");
+  }, [user]);
+
   const signOut = () => supabase.auth.signOut();
 
   return { session, user, isAdmin, loading, signOut };
