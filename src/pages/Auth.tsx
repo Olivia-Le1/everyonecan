@@ -29,7 +29,9 @@ const Auth = () => {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: {
+  emailRedirectTo: "https://olivia-le1.github.io/everyonecan/",
+},
         });
         if (error) throw error;
         toast.success("Check your inbox to confirm your email.");
@@ -52,8 +54,8 @@ const Auth = () => {
 
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
+  redirect_uri: "https://olivia-le1.github.io/everyonecan/",
+});
     if (result.error) toast.error("Google sign-in failed");
   };
 
