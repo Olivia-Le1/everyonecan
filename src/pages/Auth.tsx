@@ -37,9 +37,14 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-    } catch (err: any) {
-  console.log(err);
-  toast.error(JSON.stringify(err));
+    } catch (err: unknown) {
+  console.error("AUTH ERROR:", err);
+
+  if (err instanceof Error) {
+    toast.error(err.message);
+  } else {
+    toast.error(String(err));
+  }
 } finally {
       setLoading(false);
     }
