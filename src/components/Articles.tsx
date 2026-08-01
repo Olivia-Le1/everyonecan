@@ -38,8 +38,6 @@ export const Articles = () => {
           categoryColor: a.category_color,
           title: a.title,
           description: a.description,
-          date: new Date(a.published_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }),
-          views: a.views,
           isKeyword: !!a.is_keyword,
           keywordMonth: a.keyword_month ?? null,
         }));
