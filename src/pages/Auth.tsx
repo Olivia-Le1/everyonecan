@@ -38,8 +38,9 @@ const Auth = () => {
         if (error) throw error;
       }
     } catch (err: any) {
-      toast.error(err.message ?? "Authentication failed");
-    } finally {
+  console.log(err);
+  toast.error(JSON.stringify(err));
+} finally {
       setLoading(false);
     }
   };
