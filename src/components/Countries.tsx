@@ -1,4 +1,5 @@
 import { CountryCard, type Country } from "./CountryCard";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const countries: Country[] = [
   { flag: "🇰🇷", name: "Korea", subtitle: "South Korea", description: "Beyond K-pop, spicy food, and the 'palli palli' rush — the real Korea.", articles: 24, bg: "bg-pink-soft" },
