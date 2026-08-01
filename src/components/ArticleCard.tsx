@@ -1,5 +1,6 @@
-
+import { useNavigate } from "react-router-dom";
 export interface Article {
+  id: string;
   image: string;
   category: string;
   categoryColor: string;
@@ -7,8 +8,14 @@ export interface Article {
   description: string;
 }
 
-export const ArticleCard = ({ a }: { a: Article }) => (
-  <article className="group cursor-pointer hover-lift bg-white rounded-[2rem] overflow-hidden shadow-soft">
+export const ArticleCard = ({ a }: { a: Article }) => {
+  const navigate = useNavigate();
+
+  return (
+<article
+  onClick={() => navigate(`/article/${a.id}`)}
+  className="group cursor-pointer hover-lift bg-white rounded-[2rem] overflow-hidden shadow-soft"
+>
     <div className="relative aspect-[4/3] overflow-hidden">
       <img
         src={a.image}
@@ -29,4 +36,5 @@ export const ArticleCard = ({ a }: { a: Article }) => (
       <p className="mt-2 text-sm text-muted-foreground line-clamp-2 leading-relaxed">{a.description}</p>
     </div>
   </article>
-);
+  );
+};
