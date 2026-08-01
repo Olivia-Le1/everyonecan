@@ -10,12 +10,12 @@ interface Article {
   id: string;
   title: string;
   description: string;
+  content: string;
   image_url: string;
   category: string;
   category_color: string;
   country_flag: string;
   country_name: string;
-  views: string;
   sort_order: number;
   is_published: boolean;
   is_keyword: boolean;
@@ -32,12 +32,12 @@ interface Setting {
 const empty = {
   title: "",
   description: "",
+  content: "",
   image_url: "",
   category: "",
   category_color: "bg-pink-soft text-foreground",
   country_flag: "🌏",
   country_name: "",
-  views: "0",
   sort_order: 0,
   is_published: true,
   is_keyword: false,
@@ -276,11 +276,11 @@ const Admin = () => {
               [
                 ["title", "Title", true],
                 ["description", "Description", true],
+                ["content", "Article body", true],
                 ["image_url", "Image URL", true],
                 ["category", "Category label", true],
                 ["country_flag", "Country flag emoji", true],
                 ["country_name", "Country name", true],
-                ["views", "Views", true],
                 ["sort_order", "Display order (lower = first)", true],
                 ["keyword_month", "Keyword month (e.g. August 2026)", false],
               ] as const
