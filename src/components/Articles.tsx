@@ -33,6 +33,7 @@ export const Articles = () => {
       .order("published_at", { ascending: false })
       .then(({ data }) => {
         const mapped: Row[] = (data ?? []).map((a: any) => ({
+          id: a.id,
           image: fallbackImages[a.image_url] ?? a.image_url,
           category: `${a.country_flag} ${a.category}`,
           categoryColor: a.category_color,
