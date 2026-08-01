@@ -1,4 +1,3 @@
-import { Eye } from "lucide-react";
 
 export interface Article {
   image: string;
@@ -6,8 +5,6 @@ export interface Article {
   categoryColor: string;
   title: string;
   description: string;
-  date: string;
-  views: string;
 }
 
 export const ArticleCard = ({ a }: { a: Article }) => (
@@ -30,12 +27,6 @@ export const ArticleCard = ({ a }: { a: Article }) => (
         {a.title}
       </h3>
       <p className="mt-2 text-sm text-muted-foreground line-clamp-2 leading-relaxed">{a.description}</p>
-      <div className="mt-5 flex items-center justify-between text-xs text-muted-foreground font-semibold">
-        <span>{a.date}</span>
-        <span className="inline-flex items-center gap-1">
-          <Eye className="size-3.5" /> {a.views}
-        </span>
-      </div>
     </div>
   </article>
 );
