@@ -24,7 +24,11 @@ export type Database = {
           description: string
           id: string
           image_url: string
+          is_keyword: boolean
+          is_published: boolean
+          keyword_month: string | null
           published_at: string
+          sort_order: number
           title: string
           updated_at: string
           views: string
@@ -38,7 +42,11 @@ export type Database = {
           description: string
           id?: string
           image_url: string
+          is_keyword?: boolean
+          is_published?: boolean
+          keyword_month?: string | null
           published_at?: string
+          sort_order?: number
           title: string
           updated_at?: string
           views?: string
@@ -52,10 +60,41 @@ export type Database = {
           description?: string
           id?: string
           image_url?: string
+          is_keyword?: boolean
+          is_published?: boolean
+          keyword_month?: string | null
           published_at?: string
+          sort_order?: number
           title?: string
           updated_at?: string
           views?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          label: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          label?: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          label?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
