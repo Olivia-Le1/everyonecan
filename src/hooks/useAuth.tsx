@@ -9,62 +9,52 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let active = true;
-
-    const applySession = async (nextSession: Session | null) => {
-      if (!active) return;
-
-      setSession(nextSession);
-      setUser(nextSession?.user ?? null);
-
-      if (!nextSession?.user) {
-        setIsAdmin(false);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", nextSession.user.id)
-          .eq("role", "admin")
-          .maybeSingle();
-
-        if (error) throw error;
-        if (active) setIsAdmin(data?.role === "admin");
-      } catch (error) {
-        console.error("Admin role check error:", error);
-        if (active) setIsAdmin(false);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-
     const initAuth = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
+      try {
+        const { data } = await supabase.auth.getSession();
+
+        setSession(data.session);
+        setUser(data.session?.user ?? null);
+      } catch (error) {
         console.error("Auth init error:", error);
-        await applySession(null);
-        return;
+      } finally {
+        setLoading(false);
       }
-      await applySession(data.session);
     };
 
-    void initAuth();
+    initAuth();
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      setLoading(true);
-      void applySession(s);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
     });
 
     return () => {
-      active = false;
-      sub.subscription.unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
 
-  const signOut = () => supabase.auth.signOut();
+  useEffect(() => {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
 
-  return { session, user, isAdmin, loading, signOut };
+    // 관리자 계정
+    setIsAdmin(user.email === "l01048666065@gmail.com");
+  }, [user]);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  return {
+    session,
+    user,
+    isAdmin,
+    loading,
+    signOut,
+  };
 };
