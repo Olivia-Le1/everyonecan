@@ -12,7 +12,7 @@ export interface Country {
 
 export const CountryCard = ({ c }: { c: Country }) => (
   <a
-    href="#articles"
+  href={`#/article/${c.id}`}
     className={`group relative block rounded-[2rem] p-6 sm:p-7 ${c.bg} shadow-soft hover-lift overflow-hidden`}
   >
     <div className="absolute top-5 right-5 size-9 rounded-full bg-white/70 backdrop-blur grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity">
