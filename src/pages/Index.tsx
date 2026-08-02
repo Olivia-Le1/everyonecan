@@ -1,17 +1,20 @@
+import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Countries } from "@/components/Countries";
+import { Articles } from "@/components/Articles";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   return (
-    <>
-      <div style={{ height: "500px", background: "red" }}>
-        TEST ABOVE
-      </div>
-
-      <Countries />
-
-      <Hero />
-    </>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main>
+        <Hero />
+        <Countries />
+        <Articles />
+      </main>
+      <Footer />
+    </div>
   );
 };
 
