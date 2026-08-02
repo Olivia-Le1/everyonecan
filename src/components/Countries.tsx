@@ -91,8 +91,8 @@ export const Countries = () => {
     </div>
 
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-      {countries.map((c) => <CountryCard key={c.name} c={c} />)}
-    </div>
-  </section>
-  );
-};
+ {countries.map((c) => (
+  <div key={c.name}>
+    TEST {c.name}
+  </div>
+))}
