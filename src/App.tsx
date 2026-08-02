@@ -1,48 +1,55 @@
-import { Component, ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Route, Routes } from "react-router-dom";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Auth from "./pages/Auth.tsx";
 import Quiz from "./pages/Quiz.tsx";
 import Admin from "./pages/Admin.tsx";
 import ArticleDetail from "./pages/ArticleDetail.tsx";
+import { useAuth } from "./hooks/useAuth";
 
-class ErrorBoundary extends Component<
-  { children: ReactNode },
-  { error: string | null }
-> {
-  state = { error: null };
+const queryClient = new QueryClient();
 
-  static getDerivedStateFromError(error: Error) {
-    return { error: error.message };
+const AdminRoute = () => {
+  const { user, isAdmin, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
-  render() {
-    if (this.state.error) {
-      return (
-        <div style={{ padding: "40px", color: "red" }}>
-          ERROR: {this.state.error}
-        </div>
-      );
-    }
-
-    return this.props.children;
+  if (!user || !isAdmin) {
+    return <NotFound />;
   }
-}
+
+  return <Admin />;
+};
 
 const App = () => (
-  <ErrorBoundary>
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/quiz" element={<Quiz />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/article/:id" element={<ArticleDetail />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </HashRouter>
-  </ErrorBoundary>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/quiz" element={<Quiz />} />
+          <Route path="/admin" element={<AdminRoute />} />
+          <Route path="/article/:id" element={<ArticleDetail />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </HashRouter>
+
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;
