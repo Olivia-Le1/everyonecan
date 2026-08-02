@@ -78,21 +78,30 @@ const countries: Country[] = [
 
 export const Countries = () => {
   const { t } = useSiteSettings();
-  return (
-  <section id="countries" className="container py-20 md:py-28">
-    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-      <div>
-        <span className="text-xs font-bold uppercase tracking-widest text-pink">{t("countries_eyebrow", "Explore")}</span>
-        <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance">
-          {t("countries_title", "Which country next?")} <span className="inline-block animate-float">🧭</span>
-        </h2>
-        <p className="mt-3 text-muted-foreground max-w-xl">{t("countries_subtitle", "Around 15 stories per country. Start anywhere.")}</p>
-      </div>
-    </div>
 
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
- {countries.map((c) => (
-  <div key={c.name}>
-    TEST {c.name}
-  </div>
-))}
+  return (
+    <section id="countries" className="container py-20 md:py-28">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-widest text-pink">
+            {t("countries_eyebrow", "Explore")}
+          </span>
+
+          <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance">
+            {t("countries_title", "Which country next?")} 🧭
+          </h2>
+
+          <p className="mt-3 text-muted-foreground max-w-xl">
+            {t("countries_subtitle", "Around 15 stories per country. Start anywhere.")}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        {countries.map((c) => (
+          <CountryCard key={c.name} c={c} />
+        ))}
+      </div>
+    </section>
+  );
+};
