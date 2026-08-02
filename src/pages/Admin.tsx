@@ -188,7 +188,7 @@ const Admin = () => {
     toast.success("저장되었습니다");
   };
 
-  if (loading) return <div className="p-10">로딩 중...</div>;
+  if (loading) return <div className="p-10">관리자 권한 확인 중...</div>;
 
   if (!isAdmin) return null;
 

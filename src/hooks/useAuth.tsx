@@ -9,38 +9,60 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 현재 세션 확인
-    const initAuth = async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        setSession(data.session);
-        setUser(data.session?.user ?? null);
-      } catch (error) {
-        console.error("Auth init error:", error);
-      } finally {
+    let active = true;
+
+    const applySession = async (nextSession: Session | null) => {
+      if (!active) return;
+
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+
+      if (!nextSession?.user) {
+        setIsAdmin(false);
         setLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", nextSession.user.id)
+          .eq("role", "admin")
+          .maybeSingle();
+
+        if (error) throw error;
+        if (active) setIsAdmin(data?.role === "admin");
+      } catch (error) {
+        console.error("Admin role check error:", error);
+        if (active) setIsAdmin(false);
+      } finally {
+        if (active) setLoading(false);
       }
     };
 
-    initAuth();
+    const initAuth = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Auth init error:", error);
+        await applySession(null);
+        return;
+      }
+      await applySession(data.session);
+    };
 
-    // 세션 변경 감지
+    void initAuth();
+
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
+      setLoading(true);
+      void applySession(s);
     });
 
-    return () => sub?.subscription.unsubscribe();
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
-
-  useEffect(() => {
-    if (!user) {
-      setIsAdmin(false);
-      return;
-    }
-
-    setIsAdmin(user.email === "l01048666065@gmail.com");
-  }, [user]);
 
   const signOut = () => supabase.auth.signOut();
 
