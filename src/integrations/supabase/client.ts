@@ -18,7 +18,7 @@ export const supabase = createClient<Database>(
   SUPABASE_PUBLISHABLE_KEY || '',
   {
     auth: {
-      storage: localStorage,
+      storage: sessionStorage,   // ← 이 줄만 localStorage에서 sessionStorage로 변경
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
