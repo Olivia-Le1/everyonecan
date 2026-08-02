@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArticleCard, type Article } from "./ArticleCard";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useNavigate } from "react-router-dom";
 import a1 from "@/assets/article-1.jpg";
 import a2 from "@/assets/article-2.jpg";
@@ -24,8 +22,9 @@ type Row = Article & { isKeyword: boolean; keywordMonth: string | null };
 
 export const Articles = () => {
   const [items, setItems] = useState<Row[]>([]);
-  const { t } = useSiteSettings();
-  const { user, loading } = useAuth();
+  const t = (key: string, fallback: string) => fallback;
+  const user = true;
+  const loading = false;
   const navigate = useNavigate();
 
   useEffect(() => {
