@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { ArticleCard, type Article } from "./ArticleCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import a1 from "@/assets/article-1.jpg";
 import a2 from "@/assets/article-2.jpg";
 import a3 from "@/assets/article-3.jpg";
@@ -22,9 +24,8 @@ type Row = Article & { isKeyword: boolean; keywordMonth: string | null };
 
 export const Articles = () => {
   const [items, setItems] = useState<Row[]>([]);
-  const t = (key: string, fallback: string) => fallback;
-  const user = true;
-  const loading = false;
+  const { t } = useSiteSettings();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -101,7 +102,7 @@ export const Articles = () => {
             </p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {keywords.map((a) => <ArticleCard key={a.title} a={a} />)}
+            {keywords.map((a) => <ArticleCard key={a.id} a={a} />)}
           </div>
         </section>
       )}
@@ -118,7 +119,7 @@ export const Articles = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {regular.map((a) => <ArticleCard key={a.title} a={a} />)}
+          {regular.map((a) => <ArticleCard key={a.id} a={a} />)}
         </div>
       </section>
     </>
