@@ -14,6 +14,7 @@ export const useSiteSettings = () => {
         .select("key, value");
 
       const map: Settings = {};
+
       (data ?? []).forEach((r: any) => {
         map[r.key] = r.value;
       });
