@@ -56,12 +56,17 @@ const Admin = () => {
   const [previewImage, setPreviewImage] = useState<string>("");
 
   useEffect(() => {
-    // 로그인하지 않거나 관리자가 아니면 홈으로 이동
-    if (!loading && (!user || !isAdmin)) {
-      navigate("/");
-    }
-  }, [loading, user, isAdmin, navigate]);
+  if (loading) return;
 
+  if (!user) {
+    navigate("/auth");
+    return;
+  }
+
+  if (!isAdmin) {
+    navigate("/");
+  }
+}, [loading, user, isAdmin, navigate]);
   const load = async () => {
     const [{ data: arts }, { data: sets }] = await Promise.all([
       supabase.from("articles").select("*").order("sort_order", { ascending: true }),
@@ -188,9 +193,13 @@ const Admin = () => {
     toast.success("저장되었습니다");
   };
 
-  if (loading) return <div className="p-10">관리자 권한 확인 중...</div>;
-
-  if (!isAdmin) return null;
+  if (loading || !user || !isAdmin) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      관리자 권한 확인 중...
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen bg-background">
