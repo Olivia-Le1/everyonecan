@@ -1,6 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 
 export interface Country {
+  id: string;
   flag: string;
   name: string;
   subtitle: string;
