@@ -30,33 +30,39 @@ const Auth = () => {
           email,
           password,
           options: {
-  emailRedirectTo: "https://olivia-le1.github.io/everyonecan/",
-},
+            emailRedirectTo: window.location.origin + window.location.pathname,
+          },
         });
         if (error) throw error;
         toast.success("Check your inbox to confirm your email.");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ 
+          email, 
+          password 
+        });
         if (error) throw error;
-      }} catch (err: any) {
-  console.error("AUTH ERROR:", err);
-
-  alert(
-    "ERROR:\n" +
-    (err?.message ?? "") +
-    "\n\nDETAIL:\n" +
-    JSON.stringify(err, null, 2)
-  );
-} finally {
+        toast.success("Signed in successfully!");
+      }
+    } catch (err: any) {
+      console.error("AUTH ERROR:", err);
+      toast.error(err?.message || "Authentication failed");
+    } finally {
       setLoading(false);
     }
   };
 
   const handleGoogle = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", {
-  redirect_uri: "https://olivia-le1.github.io/everyonecan/",
-});
-    if (result.error) toast.error("Google sign-in failed");
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin + window.location.pathname,
+      });
+      if (result.error) {
+        toast.error("Google sign-in failed: " + result.error.message);
+      }
+    } catch (err: any) {
+      console.error("Google OAuth error:", err);
+      toast.error("Google sign-in failed");
+    }
   };
 
   return (
@@ -106,7 +112,8 @@ const Auth = () => {
 
         <button
           onClick={handleGoogle}
-          className="w-full py-3 rounded-full bg-white border-2 border-border font-bold text-sm hover:bg-secondary transition"
+          disabled={loading}
+          className="w-full py-3 rounded-full bg-white border-2 border-border font-bold text-sm hover:bg-secondary transition disabled:opacity-50"
         >
           Continue with Google
         </button>
