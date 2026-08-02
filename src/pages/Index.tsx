@@ -1,12 +1,17 @@
-import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
+import { Countries } from "@/components/Countries";
 
 const Index = () => {
   return (
-    <div>
-      <Navbar />
+    <>
+      <div style={{ height: "500px", background: "red" }}>
+        TEST ABOVE
+      </div>
+
+      <Countries />
+
       <Hero />
-    </div>
+    </>
   );
 };
 
