@@ -6,10 +6,14 @@ import { Footer } from "@/components/Footer";
 import { useEffect } from "react";
 
 const Index = () => {
-  useEffect(() => {
-    console.log("Index page loaded");
-  }, []);
+  return (
+    <div>
+      TEST PAGE
+    </div>
+  );
+};
 
+export default Index;
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
