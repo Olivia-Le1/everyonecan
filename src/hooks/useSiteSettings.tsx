@@ -31,7 +31,7 @@ export const useSiteSettings = () => {
     loadSettings();
 
     const channel = supabase
-      .channel("site_settings_changes")
+      .channel(`site_settings_changes_${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         {
@@ -42,9 +42,8 @@ export const useSiteSettings = () => {
         () => {
           loadSettings();
         }
-      );
-
-    channel.subscribe();
+      )
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);

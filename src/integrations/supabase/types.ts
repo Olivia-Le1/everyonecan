@@ -18,13 +18,13 @@ export type Database = {
         Row: {
           category: string
           category_color: string
+          content: string
           country_flag: string
           country_name: string
           created_at: string
           description: string
-          content: string | null
           id: string
-          image_url: string 
+          image_url: string
           is_keyword: boolean
           is_published: boolean
           keyword_month: string | null
@@ -37,11 +37,11 @@ export type Database = {
         Insert: {
           category: string
           category_color?: string
+          content?: string
           country_flag: string
           country_name: string
           created_at?: string
           description: string
-          content?: string | null
           id?: string
           image_url: string
           is_keyword?: boolean
@@ -56,11 +56,11 @@ export type Database = {
         Update: {
           category?: string
           category_color?: string
+          content?: string
           country_flag?: string
           country_name?: string
           created_at?: string
           description?: string
-          content?: string | null
           id?: string
           image_url?: string
           is_keyword?: boolean
