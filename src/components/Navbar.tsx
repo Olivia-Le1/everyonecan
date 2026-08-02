@@ -21,11 +21,15 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-border/60">
-      <nav className="container flex items-center justify-between h-18 py-4">
+    <header className="sticky top-0 z-[999] bg-white/85 backdrop-blur-xl border-b border-border/60 pointer-events-auto">
+      <nav className="container relative z-[1000] flex items-center justify-between h-18 py-4">
         <Link to="/" className="flex items-center gap-2 group">
-          <span className="text-2xl transition-transform group-hover:rotate-12">🌏</span>
-          <span className="text-xl font-black tracking-tight">World Bias</span>
+          <span className="text-2xl transition-transform group-hover:rotate-12">
+            🌏
+          </span>
+          <span className="text-xl font-black tracking-tight">
+            World Bias
+          </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-1">
@@ -38,20 +42,23 @@ export const Navbar = () => {
               {l.label}
             </Link>
           ))}
+
           {isAdmin && (
             <Link
               to="/admin"
-              className="px-4 py-2 text-sm font-semibold text-pink hover:bg-pink-soft rounded-full"
+              className="px-4 py-2 text-sm font-semibold text-pink hover:bg-pink-soft rounded-full cursor-pointer"
             >
               Admin
             </Link>
           )}
+
           {user ? (
             <button
               onClick={handleSignOut}
               className="ml-3 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-secondary text-sm font-bold hover:bg-pink-soft transition"
             >
-              <LogOut className="size-4" /> Sign out
+              <LogOut className="size-4" />
+              Sign out
             </button>
           ) : (
             <Link
@@ -63,13 +70,17 @@ export const Navbar = () => {
           )}
         </div>
 
-        <button onClick={() => setOpen(!open)} className="md:hidden p-2 rounded-full hover:bg-secondary" aria-label="menu">
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden p-2 rounded-full hover:bg-secondary"
+          aria-label="menu"
+        >
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </nav>
 
       {open && (
-        <div className="md:hidden border-t border-border/60 bg-white animate-fade-in">
+        <div className="md:hidden border-t border-border/60 bg-white animate-fade-in relative z-[1000]">
           <div className="container py-4 flex flex-col gap-1">
             {links.map((l) => (
               <Link
@@ -81,14 +92,23 @@ export const Navbar = () => {
                 {l.label}
               </Link>
             ))}
+
             {isAdmin && (
-              <Link to="/admin" onClick={() => setOpen(false)} className="px-4 py-3 rounded-2xl font-semibold text-pink">
+              <Link
+                to="/admin"
+                onClick={() => setOpen(false)}
+                className="px-4 py-3 rounded-2xl font-semibold text-pink cursor-pointer"
+              >
                 Admin
               </Link>
             )}
+
             {user ? (
               <button
-                onClick={() => { setOpen(false); handleSignOut(); }}
+                onClick={() => {
+                  setOpen(false);
+                  handleSignOut();
+                }}
                 className="mt-2 inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-full bg-secondary font-bold"
               >
                 Sign out
