@@ -4,6 +4,11 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export const Hero = () => {
   const { t } = useSiteSettings();
+  
+  const articlesCount = t("hero_articles", "120+");
+  const countriesCount = t("hero_countries", "28");
+  const readersCount = t("hero_readers", "50K");
+  
   return (
   <section id="home" className="relative overflow-hidden">
     <div className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-pink-soft blur-3xl opacity-70 animate-blob" />
@@ -31,11 +36,11 @@ export const Hero = () => {
           </Link>
         </div>
         <div className="mt-10 flex items-center gap-6 text-sm text-muted-foreground">
-          <div><span className="text-2xl font-black text-foreground">120+</span> articles</div>
+          <div><span className="text-2xl font-black text-foreground">{articlesCount}</span> articles</div>
           <div className="h-8 w-px bg-border" />
-          <div><span className="text-2xl font-black text-foreground">28</span> countries</div>
+          <div><span className="text-2xl font-black text-foreground">{countriesCount}</span> countries</div>
           <div className="h-8 w-px bg-border" />
-          <div><span className="text-2xl font-black text-foreground">50K</span> readers</div>
+          <div><span className="text-2xl font-black text-foreground">{readersCount}</span> readers</div>
         </div>
       </div>
 
