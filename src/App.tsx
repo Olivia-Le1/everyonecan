@@ -3,33 +3,15 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Auth from "./pages/Auth.tsx";
 import Quiz from "./pages/Quiz.tsx";
 import Admin from "./pages/Admin.tsx";
 import ArticleDetail from "./pages/ArticleDetail.tsx";
-import { useAuth } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
-
-const AdminRoute = () => {
-  const { user, isAdmin, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
-
-  if (!user || !isAdmin) {
-    return <NotFound />;
-  }
-
-  return <Admin />;
-};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -42,12 +24,11 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/quiz" element={<Quiz />} />
-          <Route path="/admin" element={<AdminRoute />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/article/:id" element={<ArticleDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </HashRouter>
-
     </TooltipProvider>
   </QueryClientProvider>
 );
