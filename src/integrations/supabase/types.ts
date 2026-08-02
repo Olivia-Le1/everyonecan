@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           category: string
           category_color: string
+          content: string
           country_flag: string
           country_name: string
           created_at: string
@@ -36,6 +37,7 @@ export type Database = {
         Insert: {
           category: string
           category_color?: string
+          content?: string
           country_flag: string
           country_name: string
           created_at?: string
@@ -54,6 +56,7 @@ export type Database = {
         Update: {
           category?: string
           category_color?: string
+          content?: string
           country_flag?: string
           country_name?: string
           created_at?: string
