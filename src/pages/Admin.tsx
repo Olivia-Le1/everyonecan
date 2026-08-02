@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, X, ArrowUp, ArrowDown, Eye, EyeOff } from "lucide-react";
+import { Pencil, Trash2, Plus, X, ArrowUp, ArrowDown, Eye, EyeOff, Upload } from "lucide-react";
 
 interface Article {
   id: string;
@@ -52,6 +52,8 @@ const Admin = () => {
   const [settings, setSettings] = useState<Setting[]>([]);
   const [editing, setEditing] = useState<Article | null>(null);
   const [form, setForm] = useState(empty);
+  const [uploading, setUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string>("");
 
   useEffect(() => {
     if (!loading && !user) navigate("/auth");
@@ -73,11 +75,64 @@ const Admin = () => {
   const openNew = () => {
     setEditing({ id: "" } as Article);
     setForm({ ...empty, sort_order: items.length + 1 });
+    setPreviewImage("");
   };
 
   const openEdit = (a: Article) => {
     setEditing(a);
     setForm({ ...a, keyword_month: a.keyword_month ?? "" });
+    setPreviewImage(a.image_url || "");
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 파일 타입 검사
+    const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      toast.error("PNG, JPG, GIF, WebP만 업로드 가능합니다");
+      return;
+    }
+
+    // 파일 크기 검사 (5MB 이하)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("파일 크기는 5MB 이하여야 합니다");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // 파일 이름 생성
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `articles/${fileName}`;
+
+      // Supabase Storage에 업로드
+      const { data, error } = await supabase.storage
+        .from("articles")
+        .upload(filePath, file, { upsert: true });
+
+      if (error) {
+        console.error("Upload error:", error);
+        toast.error("이미지 업로드 실패: " + error.message);
+        return;
+      }
+
+      // 공개 URL 생성
+      const { data: { publicUrl } } = supabase.storage
+        .from("articles")
+        .getPublicUrl(filePath);
+
+      setForm({ ...form, image_url: publicUrl });
+      setPreviewImage(publicUrl);
+      toast.success("이미지 업로드 완료!");
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error("이미지 업로드 중 오류 발생");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const save = async (e: React.FormEvent) => {
@@ -91,21 +146,21 @@ const Admin = () => {
     if (editing.id) {
       const { error } = await supabase.from("articles").update(payload).eq("id", editing.id);
       if (error) return toast.error(error.message);
-      toast.success("Article updated");
+      toast.success("기사가 업데이트되었습니다");
     } else {
       const { error } = await supabase.from("articles").insert(payload);
       if (error) return toast.error(error.message);
-      toast.success("Article created");
+      toast.success("기사가 생성되었습니다");
     }
     setEditing(null);
     load();
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Delete this article?")) return;
+    if (!confirm("이 기사를 삭제하시겠습니까?")) return;
     const { error } = await supabase.from("articles").delete().eq("id", id);
     if (error) return toast.error(error.message);
-    toast.success("Deleted");
+    toast.success("삭제되었습니다");
     load();
   };
 
@@ -132,10 +187,10 @@ const Admin = () => {
   const saveSetting = async (s: Setting, value: string) => {
     const { error } = await supabase.from("site_settings").update({ value }).eq("id", s.id);
     if (error) return toast.error(error.message);
-    toast.success("Saved");
+    toast.success("저장되었습니다");
   };
 
-  if (loading) return <div className="p-10">Loading...</div>;
+  if (loading) return <div className="p-10">로딩 중...</div>;
 
   if (user && !isAdmin) {
     return (
@@ -143,9 +198,9 @@ const Admin = () => {
         <Navbar />
         <div className="container py-24 text-center max-w-lg mx-auto">
           <div className="text-6xl mb-4">🔒</div>
-          <h1 className="text-3xl font-black tracking-tighter">Admin only</h1>
+          <h1 className="text-3xl font-black tracking-tighter">관리자만 접근 가능</h1>
           <p className="mt-3 text-muted-foreground">
-            Your account ({user.email}) doesn't have admin access.
+            계정 ({user.email})에 관리자 권한이 없습니다.
           </p>
           <p className="mt-3 text-xs text-muted-foreground">Your user ID: <code>{user.id}</code></p>
         </div>
@@ -159,21 +214,21 @@ const Admin = () => {
       <main className="container py-12">
         <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
           <div>
-            <h1 className="text-4xl font-black tracking-tighter">Admin studio</h1>
-            <p className="text-muted-foreground mt-1">Manage articles, order, publishing, and page copy.</p>
+            <h1 className="text-4xl font-black tracking-tighter">관리자 스튜디오</h1>
+            <p className="text-muted-foreground mt-1">기사, 순서, 발행 여부 및 페이지 텍스트를 관리합니다.</p>
           </div>
           {tab === "articles" && (
             <button
               onClick={openNew}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-pink text-white font-bold shadow-pop hover:scale-105 transition"
             >
-              <Plus className="size-4" /> New article
+              <Plus className="size-4" /> 새 기사
             </button>
           )}
         </div>
 
         <div className="flex gap-2 mb-6">
-          {([["articles", "Articles"], ["text", "Page text"]] as const).map(([k, label]) => (
+          {([["articles", "기사"], ["text", "페이지 텍스트"]] as const).map(([k, label]) => (
             <button
               key={k}
               onClick={() => setTab(k)}
@@ -189,11 +244,11 @@ const Admin = () => {
             <table className="w-full text-sm min-w-[720px]">
               <thead className="bg-secondary">
                 <tr className="text-left">
-                  <th className="p-4 font-bold">Order</th>
-                  <th className="p-4 font-bold">Title</th>
-                  <th className="p-4 font-bold">Country</th>
-                  <th className="p-4 font-bold">Status</th>
-                  <th className="p-4 font-bold text-right">Actions</th>
+                  <th className="p-4 font-bold">순서</th>
+                  <th className="p-4 font-bold">제목</th>
+                  <th className="p-4 font-bold">국가</th>
+                  <th className="p-4 font-bold">상태</th>
+                  <th className="p-4 font-bold text-right">작업</th>
                 </tr>
               </thead>
               <tbody>
@@ -211,7 +266,7 @@ const Admin = () => {
                     </td>
                     <td className="p-4 font-semibold">
                       {a.title}
-                      {a.is_keyword && <span className="ml-2 px-2 py-0.5 rounded-full bg-pink-soft text-xs font-bold">Keyword</span>}
+                      {a.is_keyword && <span className="ml-2 px-2 py-0.5 rounded-full bg-pink-soft text-xs font-bold">키워드</span>}
                     </td>
                     <td className="p-4">{a.country_flag} {a.country_name}</td>
                     <td className="p-4">
@@ -220,7 +275,7 @@ const Admin = () => {
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${a.is_published ? "bg-mint" : "bg-secondary text-muted-foreground"}`}
                       >
                         {a.is_published ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
-                        {a.is_published ? "Published" : "Draft"}
+                        {a.is_published ? "발행됨" : "임시저장"}
                       </button>
                     </td>
                     <td className="p-4 text-right whitespace-nowrap">
@@ -251,7 +306,7 @@ const Admin = () => {
                     onClick={() => saveSetting(s, s.value)}
                     className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold"
                   >
-                    Save
+                    저장
                   </button>
                 </div>
               </div>
@@ -267,22 +322,52 @@ const Admin = () => {
             className="bg-white rounded-[2rem] p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-pop"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-black">{editing.id ? "Edit article" : "New article"}</h2>
+              <h2 className="text-2xl font-black">{editing.id ? "기사 수정" : "새 기사"}</h2>
               <button type="button" onClick={() => setEditing(null)} className="p-2 rounded-full hover:bg-secondary">
                 <X className="size-4" />
               </button>
             </div>
+
+            {/* Image Upload Section */}
+            <div className="mb-4">
+              <label className="block text-xs font-bold mb-1.5">기사 이미지</label>
+              <div className="space-y-3">
+                {previewImage && (
+                  <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden border-2 border-border">
+                    <img
+                      src={previewImage}
+                      alt="미리보기"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-secondary text-sm font-bold cursor-pointer hover:bg-blue-50 transition">
+                  <Upload className="size-4" />
+                  {uploading ? "업로드 중..." : "이미지 선택 (PNG, JPG)"}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                    className="hidden"
+                  />
+                </label>
+                {form.image_url && (
+                  <p className="text-xs text-muted-foreground">✓ 이미지가 업로드되었습니다</p>
+                )}
+              </div>
+            </div>
+
             {(
               [
-                ["title", "Title", true],
-                ["description", "Description", true],
-                ["content", "Article body", true],
-                ["image_url", "Image URL", true],
-                ["category", "Category label", true],
-                ["country_flag", "Country flag emoji", true],
-                ["country_name", "Country name", true],
-                ["sort_order", "Display order (lower = first)", true],
-                ["keyword_month", "Keyword month (e.g. August 2026)", false],
+                ["title", "제목", true],
+                ["description", "설명", true],
+                ["content", "기사 본문", true],
+                ["category", "카테고리", true],
+                ["country_flag", "국가 이모지", true],
+                ["country_name", "국가명", true],
+                ["sort_order", "표시 순서 (낮을수록 먼저)", true],
+                ["keyword_month", "키워드 월 (예: 2026년 8월)", false],
               ] as const
             ).map(([key, label, required]) => (
               <div key={key} className="mb-3">
@@ -302,7 +387,7 @@ const Admin = () => {
                 checked={form.is_keyword}
                 onChange={(e) => setForm({ ...form, is_keyword: e.target.checked })}
               />
-              Keyword of the month article
+              월간 키워드 기사
             </label>
             <label className="flex items-center gap-2 mt-2 text-sm font-bold">
               <input
@@ -310,11 +395,11 @@ const Admin = () => {
                 checked={form.is_published}
                 onChange={(e) => setForm({ ...form, is_published: e.target.checked })}
               />
-              Published
+              발행
             </label>
 
-            <button type="submit" className="mt-6 w-full py-3 rounded-full bg-primary text-primary-foreground font-bold">
-              Save
+            <button type="submit" disabled={uploading} className="mt-6 w-full py-3 rounded-full bg-primary text-primary-foreground font-bold disabled:opacity-50">
+              저장
             </button>
           </form>
         </div>
