@@ -56,8 +56,11 @@ const Admin = () => {
   const [previewImage, setPreviewImage] = useState<string>("");
 
   useEffect(() => {
-    if (!loading && !user) navigate("/auth");
-  }, [loading, user, navigate]);
+    // 로그인하지 않거나 관리자가 아니면 홈으로 이동
+    if (!loading && (!user || !isAdmin)) {
+      navigate("/");
+    }
+  }, [loading, user, isAdmin, navigate]);
 
   const load = async () => {
     const [{ data: arts }, { data: sets }] = await Promise.all([
@@ -88,14 +91,12 @@ const Admin = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 파일 타입 검사
     const validTypes = ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"];
     if (!validTypes.includes(file.type)) {
       toast.error("PNG, JPG, GIF, WebP만 업로드 가능합니다");
       return;
     }
 
-    // 파일 크기 검사 (5MB 이하)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("파일 크기는 5MB 이하여야 합니다");
       return;
@@ -103,12 +104,10 @@ const Admin = () => {
 
     setUploading(true);
     try {
-      // 파일 이름 생성
       const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
       const filePath = `articles/${fileName}`;
 
-      // Supabase Storage에 업로드
       const { data, error } = await supabase.storage
         .from("articles")
         .upload(filePath, file, { upsert: true });
@@ -119,7 +118,6 @@ const Admin = () => {
         return;
       }
 
-      // 공개 URL 생성
       const { data: { publicUrl } } = supabase.storage
         .from("articles")
         .getPublicUrl(filePath);
@@ -192,21 +190,7 @@ const Admin = () => {
 
   if (loading) return <div className="p-10">로딩 중...</div>;
 
-  if (user && !isAdmin) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container py-24 text-center max-w-lg mx-auto">
-          <div className="text-6xl mb-4">🔒</div>
-          <h1 className="text-3xl font-black tracking-tighter">관리자만 접근 가능</h1>
-          <p className="mt-3 text-muted-foreground">
-            계정 ({user.email})에 관리자 권한이 없습니다.
-          </p>
-          <p className="mt-3 text-xs text-muted-foreground">Your user ID: <code>{user.id}</code></p>
-        </div>
-      </div>
-    );
-  }
+  if (!isAdmin) return null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -328,7 +312,6 @@ const Admin = () => {
               </button>
             </div>
 
-            {/* Image Upload Section */}
             <div className="mb-4">
               <label className="block text-xs font-bold mb-1.5">기사 이미지</label>
               <div className="space-y-3">
