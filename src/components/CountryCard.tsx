@@ -16,15 +16,13 @@ export const CountryCard = ({ c }: { c: Country }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-    // 즉시 이동 (로딩 없음)
-    window.location.href = `#/article/${c.id}`;
-  };
+  const handleClick = () => {
+  if (!user) {
+    navigate("/auth");
+    return;
+  }
+  navigate(`/country/${encodeURIComponent(c.name)}`);
+};
 
   return (
     <button
