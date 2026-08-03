@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 const ArticleDetail = () => {
   const { id } = useParams();
   const [article, setArticle] = useState<any>(null);
+  const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -17,6 +18,10 @@ const ArticleDetail = () => {
       .then(({ data }) => {
         setArticle(data);
       });
+
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
   }, [id]);
 
   if (!article) {
@@ -39,9 +44,23 @@ const ArticleDetail = () => {
         {article.description}
       </p>
 
-      <div className="mt-8 whitespace-pre-line">
-        {article.content}
-      </div>
+      {session ? (
+        <div className="mt-8 whitespace-pre-line">
+          {article.content}
+        </div>
+      ) : (
+        <div className="mt-8">
+          <div className="whitespace-pre-line blur-[1px] max-h-32 overflow-hidden">
+            {article.content}
+          </div>
+
+          <div className="mt-8 p-6 rounded-3xl bg-secondary text-center">
+            <p className="font-bold text-lg">
+              Sign up to read the full article.
+            </p>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
