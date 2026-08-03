@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArticleCard, type Article } from "./ArticleCard";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import a1 from "@/assets/article-1.jpg";
 import a2 from "@/assets/article-2.jpg";
@@ -24,9 +22,8 @@ type Row = Article & { isKeyword: boolean; keywordMonth: string | null };
 
 export const Articles = () => {
   const [items, setItems] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
   const { t } = useSiteSettings();
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
     supabase
@@ -47,6 +44,7 @@ export const Articles = () => {
           keywordMonth: a.keyword_month ?? null,
         }));
         setItems(mapped);
+        setLoading(false);
       });
   }, []);
 
@@ -54,30 +52,7 @@ export const Articles = () => {
     return (
       <section id="articles" className="container py-20 md:py-28">
         <div className="text-center">
-          <p className="text-muted-foreground">로딩 중...</p>
-        </div>
-      </section>
-    );
-  }
-
-  // 로그인되지 않은 경우
-  if (!user) {
-    return (
-      <section id="articles" className="container py-20 md:py-28">
-        <div className="bg-white rounded-[2rem] shadow-soft p-8 md:p-12 text-center max-w-2xl mx-auto">
-          <div className="text-5xl mb-4">🔐</div>
-          <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-3">
-            기사를 보려면 가입하세요
-          </h2>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            World Bias의 모든 기사를 읽으려면 회원가입 후 로그인해주세요.
-          </p>
-          <button
-            onClick={() => navigate("/auth")}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-pink text-white font-bold shadow-pop hover:scale-105 transition"
-          >
-            가입하기 / 로그인 ✨
-          </button>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </section>
     );
@@ -92,7 +67,7 @@ export const Articles = () => {
         <section id="keyword" className="container pt-20 md:pt-28">
           <div className="mb-10">
             <span className="text-xs font-bold uppercase tracking-widest text-pink">
-              {keywords[0].keywordMonth || "이번 달"}
+              {keywords[0].keywordMonth || "This Month"}
             </span>
             <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance">
               {t("keyword_title", "Keyword of the month")} <span className="inline-block animate-float">🔑</span>
