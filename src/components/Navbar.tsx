@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 
 const links = [
   { label: "Home", to: "/" },
-  { label: "Articles", to: "/#articles" },
   { label: "Quiz", to: "/quiz" },
   { label: "About", to: "/#about" },
 ];
@@ -14,6 +13,26 @@ export const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const handleArticlesClick = () => {
+    if (window.location.pathname === "/") {
+      document
+        .getElementById("articles")
+        ?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/#articles");
+    }
+  };
+
+  const handleAboutClick = () => {
+    if (window.location.pathname === "/") {
+      document
+        .getElementById("about")
+        ?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/#about");
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -33,15 +52,32 @@ export const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-1">
-          {links.map((l) => (
-          <Link
-             key={l.to}
-             to={l.to}
+          <button
+            onClick={handleArticlesClick}
             className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
->
- {l.label}
-</Link>
-          ))}
+          >
+            Articles
+          </button>
+
+          {links.map((l) =>
+            l.label === "About" ? (
+              <button
+                key={l.label}
+                onClick={handleAboutClick}
+                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+              >
+                {l.label}
+              </button>
+            ) : (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+              >
+                {l.label}
+              </Link>
+            )
+          )}
 
           {isAdmin && (
             <Link
@@ -82,22 +118,45 @@ export const Navbar = () => {
       {open && (
         <div className="md:hidden border-t border-border/60 bg-white animate-fade-in relative z-[1000]">
           <div className="container py-4 flex flex-col gap-1">
-            {links.map((l) => (
-              <Link
-  key={l.to}
-  to={l.to}
-  onClick={() => setOpen(false)}
-  className="px-4 py-3 rounded-2xl text-base font-semibold hover:bg-secondary"
->
-  {l.label}
-</Link>
-            ))}
+            <button
+              onClick={() => {
+                setOpen(false);
+                handleArticlesClick();
+              }}
+              className="px-4 py-3 rounded-2xl text-base font-semibold text-left hover:bg-secondary"
+            >
+              Articles
+            </button>
+
+            {links.map((l) =>
+              l.label === "About" ? (
+                <button
+                  key={l.label}
+                  onClick={() => {
+                    setOpen(false);
+                    handleAboutClick();
+                  }}
+                  className="px-4 py-3 rounded-2xl text-base font-semibold text-left hover:bg-secondary"
+                >
+                  {l.label}
+                </button>
+              ) : (
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setOpen(false)}
+                  className="px-4 py-3 rounded-2xl text-base font-semibold hover:bg-secondary"
+                >
+                  {l.label}
+                </Link>
+              )
+            )}
 
             {isAdmin && (
               <Link
                 to="/admin"
                 onClick={() => setOpen(false)}
-                className="px-4 py-3 rounded-2xl font-semibold text-pink cursor-pointer"
+                className="px-4 py-3 rounded-2xl font-semibold text-pink"
               >
                 Admin
               </Link>
