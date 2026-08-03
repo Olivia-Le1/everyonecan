@@ -15,12 +15,14 @@ export const Navbar = () => {
 
   const scrollToSection = (id: string) => {
     if (window.location.pathname !== "/") {
-      navigate("/");
+      navigate("/", { replace: true });
+
       setTimeout(() => {
         document
           .getElementById(id)
           ?.scrollIntoView({ behavior: "smooth" });
-      }, 300);
+      }, 500);
+
       return;
     }
 
@@ -30,22 +32,26 @@ export const Navbar = () => {
   };
 
   const handleHomeClick = () => {
-  if (window.location.pathname !== "/") {
-    navigate("/");
-    setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }, 300);
-    return;
-  }
+    if (window.location.pathname !== "/") {
+      navigate("/", { replace: true });
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-};
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "smooth",
+        });
+      }, 500);
+
+      return;
+    }
+
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -132,16 +138,15 @@ export const Navbar = () => {
 
         </div>
 
-
         <button
           onClick={() => setOpen(!open)}
           className="md:hidden p-2 rounded-full hover:bg-secondary"
+          aria-label="menu"
         >
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
 
       </nav>
-
 
       {open && (
         <div className="md:hidden border-t border-border/60 bg-white">
