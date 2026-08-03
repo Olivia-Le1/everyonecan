@@ -34,7 +34,7 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast.success("Check your inbox to confirm your email.");
+        toast.success("Account created! You're signed in.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ 
           email, 
