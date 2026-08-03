@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 const links = [
+  { label: "Home", to: "/" },
   { label: "Quiz", to: "/quiz" },
 ];
 
@@ -12,35 +13,19 @@ export const Navbar = () => {
   const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
 
-  const handleArticlesClick = () => {
+  const scrollToSection = (id: string) => {
     if (window.location.pathname !== "/") {
       navigate("/");
       setTimeout(() => {
         document
-          .getElementById("articles")
+          .getElementById(id)
           ?.scrollIntoView({ behavior: "smooth" });
       }, 300);
       return;
     }
 
     document
-      .getElementById("articles")
-      ?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleAboutClick = () => {
-    if (window.location.pathname !== "/") {
-      navigate("/");
-      setTimeout(() => {
-        document
-          .getElementById("about")
-          ?.scrollIntoView({ behavior: "smooth" });
-      }, 300);
-      return;
-    }
-
-    document
-      .getElementById("about")
+      .getElementById(id)
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -61,8 +46,8 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-[999] bg-white/85 backdrop-blur-xl border-b border-border/60 pointer-events-auto">
-      <nav className="container relative z-[1000] flex items-center justify-between h-18 py-4">
+    <header className="sticky top-0 z-[999] bg-white/85 backdrop-blur-xl border-b border-border/60">
+      <nav className="container flex items-center justify-between h-18 py-4">
 
         <button
           onClick={handleHomeClick}
@@ -78,25 +63,35 @@ export const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-1">
 
+          {links.map((l) =>
+            l.label === "Home" ? (
+              <button
+                key={l.label}
+                onClick={handleHomeClick}
+                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+              >
+                Home
+              </button>
+            ) : (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+              >
+                {l.label}
+              </Link>
+            )
+          )}
+
           <button
-            onClick={handleArticlesClick}
+            onClick={() => scrollToSection("articles")}
             className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
           >
             Articles
           </button>
 
-          {links.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
-            >
-              {l.label}
-            </Link>
-          ))}
-
           <button
-            onClick={handleAboutClick}
+            onClick={() => scrollToSection("about")}
             className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
           >
             About
@@ -114,7 +109,7 @@ export const Navbar = () => {
           {user ? (
             <button
               onClick={handleSignOut}
-              className="ml-3 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-secondary text-sm font-bold hover:bg-pink-soft transition"
+              className="ml-3 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-secondary text-sm font-bold"
             >
               <LogOut className="size-4" />
               Sign out
@@ -122,21 +117,24 @@ export const Navbar = () => {
           ) : (
             <Link
               to="/auth"
-              className="ml-3 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-pink text-white text-sm font-bold shadow-pop hover:scale-105 transition-transform"
+              className="ml-3 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-pink text-white text-sm font-bold"
             >
               Sign in ✨
             </Link>
           )}
+
         </div>
+
 
         <button
           onClick={() => setOpen(!open)}
           className="md:hidden p-2 rounded-full hover:bg-secondary"
-          aria-label="menu"
         >
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
+
       </nav>
+
 
       {open && (
         <div className="md:hidden border-t border-border/60 bg-white">
@@ -145,9 +143,19 @@ export const Navbar = () => {
             <button
               onClick={() => {
                 setOpen(false);
-                handleArticlesClick();
+                handleHomeClick();
               }}
-              className="px-4 py-3 rounded-2xl text-base font-semibold text-left hover:bg-secondary"
+              className="px-4 py-3 rounded-2xl text-left font-semibold hover:bg-secondary"
+            >
+              Home
+            </button>
+
+            <button
+              onClick={() => {
+                setOpen(false);
+                scrollToSection("articles");
+              }}
+              className="px-4 py-3 rounded-2xl text-left font-semibold hover:bg-secondary"
             >
               Articles
             </button>
@@ -155,7 +163,7 @@ export const Navbar = () => {
             <Link
               to="/quiz"
               onClick={() => setOpen(false)}
-              className="px-4 py-3 rounded-2xl text-base font-semibold hover:bg-secondary"
+              className="px-4 py-3 rounded-2xl font-semibold hover:bg-secondary"
             >
               Quiz
             </Link>
@@ -163,9 +171,9 @@ export const Navbar = () => {
             <button
               onClick={() => {
                 setOpen(false);
-                handleAboutClick();
+                scrollToSection("about");
               }}
-              className="px-4 py-3 rounded-2xl text-base font-semibold text-left hover:bg-secondary"
+              className="px-4 py-3 rounded-2xl text-left font-semibold hover:bg-secondary"
             >
               About
             </button>
