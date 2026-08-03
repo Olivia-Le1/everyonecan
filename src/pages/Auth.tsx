@@ -28,14 +28,10 @@ const Auth = () => {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: window.location.origin + window.location.pathname,
-          },
         });
         if (error) throw error;
-        if (!data.session) {
-          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-          if (signInError) throw signInError;
+        if (!data.session || !data.user) {
+          throw new Error("Account creation did not return a login session. Please try again.");
         }
         toast.success("Account created! You're signed in.");
       } else {
