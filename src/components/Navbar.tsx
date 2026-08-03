@@ -4,9 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 const links = [
-  { label: "Home", to: "/" },
   { label: "Quiz", to: "/quiz" },
-  { label: "About", to: "/#about" },
 ];
 
 export const Navbar = () => {
@@ -15,28 +13,45 @@ export const Navbar = () => {
   const navigate = useNavigate();
 
   const handleArticlesClick = () => {
-  if (window.location.pathname !== "/") {
-    navigate("/");
-    setTimeout(() => {
-      document
-        .getElementById("articles")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }, 300);
-    return;
-  }
+    if (window.location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document
+          .getElementById("articles")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+      return;
+    }
 
-  document
-    .getElementById("articles")
-    ?.scrollIntoView({ behavior: "smooth" });
-};
+    document
+      .getElementById("articles")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleAboutClick = () => {
+    if (window.location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document
+          .getElementById("about")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+      return;
+    }
+
+    document
+      .getElementById("about")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleHomeClick = () => {
     if (window.location.pathname === "/") {
-      document
-        .getElementById("about")
-        ?.scrollIntoView({ behavior: "smooth" });
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     } else {
-      navigate("/#about");
+      navigate("/");
     }
   };
 
@@ -48,16 +63,21 @@ export const Navbar = () => {
   return (
     <header className="sticky top-0 z-[999] bg-white/85 backdrop-blur-xl border-b border-border/60 pointer-events-auto">
       <nav className="container relative z-[1000] flex items-center justify-between h-18 py-4">
-        <Link to="/" className="flex items-center gap-2 group">
+
+        <button
+          onClick={handleHomeClick}
+          className="flex items-center gap-2 group"
+        >
           <span className="text-2xl transition-transform group-hover:rotate-12">
             🌏
           </span>
           <span className="text-xl font-black tracking-tight">
             World Bias
           </span>
-        </Link>
+        </button>
 
         <div className="hidden md:flex items-center gap-1">
+
           <button
             onClick={handleArticlesClick}
             className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
@@ -65,30 +85,27 @@ export const Navbar = () => {
             Articles
           </button>
 
-          {links.map((l) =>
-            l.label === "About" ? (
-              <button
-                key={l.label}
-                onClick={handleAboutClick}
-                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
-              >
-                {l.label}
-              </button>
-            ) : (
-              <Link
-                key={l.to}
-                to={l.to}
-                className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
-              >
-                {l.label}
-              </Link>
-            )
-          )}
+          {links.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+            >
+              {l.label}
+            </Link>
+          ))}
+
+          <button
+            onClick={handleAboutClick}
+            className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+          >
+            About
+          </button>
 
           {isAdmin && (
             <Link
               to="/admin"
-              className="px-4 py-2 text-sm font-semibold text-pink hover:bg-pink-soft rounded-full cursor-pointer"
+              className="px-4 py-2 text-sm font-semibold text-pink hover:bg-pink-soft rounded-full"
             >
               Admin
             </Link>
@@ -122,8 +139,9 @@ export const Navbar = () => {
       </nav>
 
       {open && (
-        <div className="md:hidden border-t border-border/60 bg-white animate-fade-in relative z-[1000]">
+        <div className="md:hidden border-t border-border/60 bg-white">
           <div className="container py-4 flex flex-col gap-1">
+
             <button
               onClick={() => {
                 setOpen(false);
@@ -134,29 +152,23 @@ export const Navbar = () => {
               Articles
             </button>
 
-            {links.map((l) =>
-              l.label === "About" ? (
-                <button
-                  key={l.label}
-                  onClick={() => {
-                    setOpen(false);
-                    handleAboutClick();
-                  }}
-                  className="px-4 py-3 rounded-2xl text-base font-semibold text-left hover:bg-secondary"
-                >
-                  {l.label}
-                </button>
-              ) : (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  onClick={() => setOpen(false)}
-                  className="px-4 py-3 rounded-2xl text-base font-semibold hover:bg-secondary"
-                >
-                  {l.label}
-                </Link>
-              )
-            )}
+            <Link
+              to="/quiz"
+              onClick={() => setOpen(false)}
+              className="px-4 py-3 rounded-2xl text-base font-semibold hover:bg-secondary"
+            >
+              Quiz
+            </Link>
+
+            <button
+              onClick={() => {
+                setOpen(false);
+                handleAboutClick();
+              }}
+              className="px-4 py-3 rounded-2xl text-base font-semibold text-left hover:bg-secondary"
+            >
+              About
+            </button>
 
             {isAdmin && (
               <Link
@@ -174,7 +186,7 @@ export const Navbar = () => {
                   setOpen(false);
                   handleSignOut();
                 }}
-                className="mt-2 inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-full bg-secondary font-bold"
+                className="mt-2 px-5 py-3 rounded-full bg-secondary font-bold"
               >
                 Sign out
               </button>
@@ -182,14 +194,16 @@ export const Navbar = () => {
               <Link
                 to="/auth"
                 onClick={() => setOpen(false)}
-                className="mt-2 inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-full bg-pink text-white font-bold"
+                className="mt-2 px-5 py-3 rounded-full bg-pink text-white font-bold text-center"
               >
                 Sign in ✨
               </Link>
             )}
+
           </div>
         </div>
       )}
+
     </header>
   );
 };
