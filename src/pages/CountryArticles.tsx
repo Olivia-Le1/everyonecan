@@ -17,10 +17,11 @@ const CountryArticles = () => {
 
   useEffect(() => {
     if (!name) return;
+
     supabase
       .from("articles")
       .select("*")
-      .ilike("country_name", `%${name}%`)
+      .ilike("country_name", `%${decodeURIComponent(name)}%`)
       .eq("is_published", true)
       .order("sort_order", { ascending: true })
       .then(({ data }) => {
@@ -29,17 +30,23 @@ const CountryArticles = () => {
   }, [name]);
 
   if (articles === null) {
-    return <div className="p-10 text-center">Loading...</div>;
+    return (
+      <div className="p-10 text-center">
+        Loading...
+      </div>
+    );
   }
 
   return (
     <main className="container py-16">
       <h1 className="text-4xl font-black tracking-tighter mb-8">
-        {decodeURIComponent(name ?? "")} 관련 기사
+        {decodeURIComponent(name ?? "")} Articles
       </h1>
 
       {articles.length === 0 ? (
-        <p className="text-muted-foreground">아직 등록된 기사가 없어요.</p>
+        <p className="text-muted-foreground">
+          No articles found.
+        </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {articles.map((a) => (
@@ -49,11 +56,21 @@ const CountryArticles = () => {
               className="block rounded-[1.5rem] overflow-hidden bg-white shadow-soft hover-lift"
             >
               {a.image_url && (
-                <img src={a.image_url} alt={a.title} className="w-full aspect-[4/3] object-cover" />
+                <img
+                  src={a.image_url}
+                  alt={a.title}
+                  className="w-full aspect-[4/3] object-cover"
+                />
               )}
+
               <div className="p-5">
-                <h2 className="font-bold text-lg">{a.title}</h2>
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{a.description}</p>
+                <h2 className="font-bold text-lg">
+                  {a.title}
+                </h2>
+
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                  {a.description}
+                </p>
               </div>
             </Link>
           ))}
