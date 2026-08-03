@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const ArticleDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [article, setArticle] = useState<any>(null);
-  const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -18,10 +21,6 @@ const ArticleDetail = () => {
       .then(({ data }) => {
         setArticle(data);
       });
-
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-    });
   }, [id]);
 
   if (!article) {
@@ -30,6 +29,7 @@ const ArticleDetail = () => {
 
   return (
     <main className="container py-20">
+
       <img
         src={article.image_url}
         alt={article.title}
@@ -40,27 +40,35 @@ const ArticleDetail = () => {
         {article.title}
       </h1>
 
-      <p className="mt-4 text-muted-foreground">
+      {/* summary는 누구나 보기 */}
+      <p className="mt-4 text-muted-foreground text-lg">
         {article.description}
       </p>
 
-      {session ? (
-        <div className="mt-8 whitespace-pre-line">
+      {/* 로그인한 경우만 본문 표시 */}
+      {user ? (
+        <div className="mt-8 whitespace-pre-line leading-relaxed">
           {article.content}
         </div>
       ) : (
-        <div className="mt-8">
-          <div className="whitespace-pre-line blur-[1px] max-h-32 overflow-hidden">
-            {article.content}
-          </div>
+        <div className="mt-10 p-8 rounded-[2rem] bg-secondary text-center">
+          <h2 className="text-2xl font-black mb-3">
+            Sign up to read the full article ✨
+          </h2>
 
-          <div className="mt-8 p-6 rounded-3xl bg-secondary text-center">
-            <p className="font-bold text-lg">
-              Sign up to read the full article.
-            </p>
-          </div>
+          <p className="text-muted-foreground mb-6">
+            Create an account to explore the complete story.
+          </p>
+
+          <button
+            onClick={() => navigate("/auth")}
+            className="px-6 py-3 rounded-full bg-pink text-white font-bold"
+          >
+            Sign up
+          </button>
         </div>
       )}
+
     </main>
   );
 };
