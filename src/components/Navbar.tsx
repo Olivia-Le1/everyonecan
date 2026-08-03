@@ -34,13 +34,13 @@ export const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-1">
           {links.map((l) => (
-            <a
-              key={l.to}
-              href={l.to}
-              className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
-            >
-              {l.label}
-            </a>
+          <Link
+             key={l.to}
+             to={l.to}
+            className="px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-secondary"
+>
+ {l.label}
+</Link>
           ))}
 
           {isAdmin && (
@@ -83,14 +83,14 @@ export const Navbar = () => {
         <div className="md:hidden border-t border-border/60 bg-white animate-fade-in relative z-[1000]">
           <div className="container py-4 flex flex-col gap-1">
             {links.map((l) => (
-              <a
-                key={l.to}
-                href={l.to}
-                onClick={() => setOpen(false)}
-                className="px-4 py-3 rounded-2xl text-base font-semibold hover:bg-secondary"
-              >
-                {l.label}
-              </a>
+              <Link
+  key={l.to}
+  to={l.to}
+  onClick={() => setOpen(false)}
+  className="px-4 py-3 rounded-2xl text-base font-semibold hover:bg-secondary"
+>
+  {l.label}
+</Link>
             ))}
 
             {isAdmin && (
