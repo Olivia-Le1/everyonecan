@@ -25,45 +25,40 @@ const Auth = () => {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const handleEmail = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    if (mode === "signup") {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin + window.location.pathname,
-        },
-      });
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: window.location.origin + window.location.pathname,
+          },
+        });
 
-      // 이메일 발송 에러는 무시하고, 계정 생성 자체가 됐는지 로그인으로 확인
-      if (error && !error.message.toLowerCase().includes("confirmation email")) {
-        throw error;
+        // 이메일 발송 에러는 무시하고, 계정 생성 자체가 됐는지 로그인으로 확인
+        if (error && !error.message.toLowerCase().includes("confirmation email")) {
+          throw error;
+        }
+
+        if (!data?.session) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+          if (signInError) throw signInError;
+        }
+
+        toast.success("Account created! You're signed in.");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+        if (error) throw error;
+        toast.success("Signed in successfully!");
       }
-
-      if (!data?.session) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-        if (signInError) throw signInError;
-      }
-
-      toast.success("Account created! You're signed in.");
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({ 
-        email, 
-        password 
-      });
-      if (error) throw error;
-      toast.success("Signed in successfully!");
+    } catch (err: any) {
+      console.error("AUTH ERROR:", err);
+      toast.error(err?.message || "Authentication failed");
+    } finally {
+      setLoading(false);
     }
-  } catch (err: any) {
-    console.error("AUTH ERROR:", err);
-    toast.error(err?.message || "Authentication failed");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
