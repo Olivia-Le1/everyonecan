@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 
 const Auth = () => {
@@ -51,20 +50,6 @@ const Auth = () => {
     }
   };
 
-  const handleGoogle = async () => {
-    try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin + window.location.pathname,
-      });
-      if (result.error) {
-        toast.error("Google sign-in failed: " + result.error.message);
-      }
-    } catch (err: any) {
-      console.error("Google OAuth error:", err);
-      toast.error("Google sign-in failed");
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md bg-white rounded-[2rem] shadow-pop p-8">
@@ -105,18 +90,6 @@ const Auth = () => {
             {loading ? "..." : mode === "signin" ? "Sign in" : "Sign up"}
           </button>
         </form>
-
-        <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
-          <div className="h-px flex-1 bg-border" /> OR <div className="h-px flex-1 bg-border" />
-        </div>
-
-        <button
-          onClick={handleGoogle}
-          disabled={loading}
-          className="w-full py-3 rounded-full bg-white border-2 border-border font-bold text-sm hover:bg-secondary transition disabled:opacity-50"
-        >
-          Continue with Google
-        </button>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {mode === "signin" ? "No account?" : "Have an account?"}{" "}
