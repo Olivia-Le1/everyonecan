@@ -30,15 +30,22 @@ export const Navbar = () => {
   };
 
   const handleHomeClick = () => {
-    if (window.location.pathname === "/") {
+  if (window.location.pathname !== "/") {
+    navigate("/");
+    setTimeout(() => {
       window.scrollTo({
         top: 0,
         behavior: "smooth",
       });
-    } else {
-      navigate("/");
-    }
-  };
+    }, 300);
+    return;
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
 
   const handleSignOut = async () => {
     await signOut();
