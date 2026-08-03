@@ -14,42 +14,36 @@ const Auth = () => {
     const { data } = supabase.auth.onAuthStateChange((_e, session) => {
       if (session) navigate("/");
     });
+
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate("/");
     });
+
     return () => data.subscription.unsubscribe();
   }, [navigate]);
 
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: window.location.origin + window.location.pathname,
-          },
         });
 
-        // 이메일 발송 에러는 무시하고, 계정 생성 자체가 됐는지 로그인으로 확인
-        if (error && !error.message.toLowerCase().includes("confirmation email")) {
-          throw error;
-        }
+        if (error) throw error;
 
-        if (!data?.session) {
-          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-          if (signInError) throw signInError;
-        }
-
-        toast.success("Account created! You're signed in.");
+        toast.success("Account created successfully!");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
-          password
+          password,
         });
+
         if (error) throw error;
+
         toast.success("Signed in successfully!");
       }
     } catch (err: any) {
@@ -67,11 +61,15 @@ const Auth = () => {
           <span className="text-2xl">🌏</span>
           <span className="text-xl font-black tracking-tight">World Bias</span>
         </a>
+
         <h1 className="text-3xl font-black tracking-tighter mb-2">
           {mode === "signin" ? "Welcome back" : "Create account"}
         </h1>
+
         <p className="text-sm text-muted-foreground mb-6">
-          {mode === "signin" ? "Sign in to manage your articles." : "Sign up to get started."}
+          {mode === "signin"
+            ? "Sign in to manage your articles."
+            : "Sign up to get started."}
         </p>
 
         <form onSubmit={handleEmail} className="space-y-3">
@@ -83,6 +81,7 @@ const Auth = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-3 rounded-2xl bg-secondary text-sm font-semibold outline-none focus:ring-2 ring-primary"
           />
+
           <input
             type="password"
             required
@@ -92,6 +91,7 @@ const Auth = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-3 rounded-2xl bg-secondary text-sm font-semibold outline-none focus:ring-2 ring-primary"
           />
+
           <button
             type="submit"
             disabled={loading}
@@ -104,7 +104,9 @@ const Auth = () => {
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {mode === "signin" ? "No account?" : "Have an account?"}{" "}
           <button
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+            onClick={() =>
+              setMode(mode === "signin" ? "signup" : "signin")
+            }
             className="font-bold text-pink hover:underline"
           >
             {mode === "signin" ? "Sign up" : "Sign in"}
