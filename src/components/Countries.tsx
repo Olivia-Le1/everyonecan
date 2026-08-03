@@ -1,25 +1,64 @@
+import { useEffect, useState } from "react";
 import { CountryCard, type Country } from "./CountryCard";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { supabase } from "@/integrations/supabase/client";
 
-const countryDefaults = [
-  { id: "korea", flag: "🇰🇷", name: "Korea", subtitle: "South Korea", bg: "bg-pink-soft" },
-  { id: "usa", flag: "🇺🇸", name: "USA", subtitle: "United States", bg: "bg-butter" },
-  { id: "japan", flag: "🇯🇵", name: "Japan", subtitle: "Nippon", bg: "bg-mint" },
-  { id: "france", flag: "🇫🇷", name: "France", subtitle: "République Française", bg: "bg-lavender" },
-  { id: "brazil", flag: "🇧🇷", name: "Brazil", subtitle: "Brasil", bg: "bg-peach" },
-  { id: "italy", flag: "🇮🇹", name: "Italy", subtitle: "Italia", bg: "bg-rose" },
-  { id: "uk", flag: "🇬🇧", name: "UK", subtitle: "Britain", bg: "bg-sky" },
-  { id: "india", flag: "🇮🇳", name: "India", subtitle: "Bharat", bg: "bg-sage" },
+const backgrounds = [
+  "bg-pink-soft",
+  "bg-butter",
+  "bg-mint",
+  "bg-lavender",
+  "bg-peach",
+  "bg-rose",
+  "bg-sky",
+  "bg-sage",
 ];
 
 export const Countries = () => {
   const { t } = useSiteSettings();
+  const [countries, setCountries] = useState<Country[]>([]);
 
-  const countries: Country[] = countryDefaults.map((c) => ({
-    ...c,
-    description: t(`country_${c.id}_description`, ""),
-    articles: Number(t(`country_${c.id}_articles`, "0")),
-  }));
+  useEffect(() => {
+    const loadCountries = async () => {
+      const { data, error } = await supabase
+        .from("articles")
+        .select("country_flag, country_name")
+        .eq("is_published", true);
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      const unique = Array.from(
+        new Map(
+          (data ?? []).map((item: any) => [
+            item.country_name,
+            item,
+          ])
+        ).values()
+      );
+
+      const mapped = unique.map((c: any, index) => ({
+        id: c.country_name.toLowerCase(),
+        flag: c.country_flag,
+        name: c.country_name,
+        subtitle: c.country_name,
+        bg: backgrounds[index % backgrounds.length],
+        description: t(
+          `country_${c.country_name.toLowerCase()}_description`,
+          ""
+        ),
+        articles: data?.filter(
+          (a: any) => a.country_name === c.country_name
+        ).length ?? 0,
+      }));
+
+      setCountries(mapped);
+    };
+
+    loadCountries();
+  }, [t]);
 
   return (
     <section id="countries" className="container py-20 md:py-28">
@@ -28,14 +67,20 @@ export const Countries = () => {
           <span className="text-xs font-bold uppercase tracking-widest text-pink">
             {t("countries_eyebrow", "Explore")}
           </span>
+
           <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance">
             {t("countries_title", "Which country next?")} 🧭
           </h2>
+
           <p className="mt-3 text-muted-foreground max-w-xl">
-            {t("countries_subtitle", "Around 15 stories per country. Start anywhere.")}
+            {t(
+              "countries_subtitle",
+              "Explore stories from around the world."
+            )}
           </p>
         </div>
       </div>
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         {countries.map((c) => (
           <CountryCard key={c.name} c={c} />
