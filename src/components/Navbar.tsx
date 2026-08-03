@@ -15,14 +15,20 @@ export const Navbar = () => {
   const navigate = useNavigate();
 
   const handleArticlesClick = () => {
-    if (window.location.pathname === "/") {
+  if (window.location.pathname !== "/") {
+    navigate("/");
+    setTimeout(() => {
       document
         .getElementById("articles")
         ?.scrollIntoView({ behavior: "smooth" });
-    } else {
-      navigate("/#articles");
-    }
-  };
+    }, 300);
+    return;
+  }
+
+  document
+    .getElementById("articles")
+    ?.scrollIntoView({ behavior: "smooth" });
+};
 
   const handleAboutClick = () => {
     if (window.location.pathname === "/") {
