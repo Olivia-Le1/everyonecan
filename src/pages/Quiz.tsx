@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 import { Check, X, RotateCcw } from "lucide-react";
 
 interface Question {
@@ -12,64 +13,41 @@ interface Question {
   explanation: string;
 }
 
-const questions: Question[] = [
-  {
-    flag: "🇰🇷",
-    country: "Korea",
-    question: "Do Koreans really eat kimchi at every single meal?",
-    options: ["Yes, every meal", "Most meals, but not all", "Only at dinner", "Only on weekends"],
-    correct: 1,
-    explanation: "Kimchi is a staple, but younger generations skip it more often than you'd think.",
-  },
-  {
-    flag: "🇯🇵",
-    country: "Japan",
-    question: "Which Tokyo district is famous for loud, expressive Gen Z culture?",
-    options: ["Ginza", "Shibuya", "Marunouchi", "Roppongi"],
-    correct: 1,
-    explanation: "Shibuya is the heart of youth culture — not exactly the 'quiet Japan' stereotype.",
-  },
-  {
-    flag: "🇫🇷",
-    country: "France",
-    question: "What do real Parisians complain about the most?",
-    options: ["Croissants", "The metro", "Berets", "Eiffel Tower"],
-    correct: 1,
-    explanation: "The Paris metro is a national sport of complaining. Truly.",
-  },
-  {
-    flag: "🇧🇷",
-    country: "Brazil",
-    question: "How many official biomes does Brazil have?",
-    options: ["1", "3", "6", "10"],
-    correct: 2,
-    explanation: "Six biomes — from the Amazon to the Pampas. Way more than just beaches.",
-  },
-  {
-    flag: "🇮🇹",
-    country: "Italy",
-    question: "Roughly how many official pasta shapes exist in Italy?",
-    options: ["50", "100", "200", "350+"],
-    correct: 3,
-    explanation: "Over 350 shapes, each tied to a region and a specific sauce.",
-  },
-];
-
 const Quiz = () => {
+  const [questions, setQuestions] = useState<Question[] | null>(null);
   const [idx, setIdx] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
 
-  const q = questions[idx];
+  useEffect(() => {
+    supabase
+      .from("quiz_questions")
+      .select("*")
+      .eq("is_visible", true)
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => {
+        setQuestions(
+          (data ?? []).map((q: any) => ({
+            flag: q.flag,
+            country: q.country,
+            question: q.question,
+            options: [q.option_a, q.option_b, q.option_c, q.option_d].filter((o) => o && o.length > 0),
+            correct: q.correct_index,
+            explanation: q.explanation,
+          }))
+        );
+      });
+  }, []);
 
   const handlePick = (i: number) => {
-    if (selected !== null) return;
+    if (selected !== null || !questions) return;
     setSelected(i);
-    if (i === q.correct) setScore((s) => s + 1);
+    if (i === questions[idx].correct) setScore((s) => s + 1);
   };
 
   const handleNext = () => {
+    if (!questions) return;
     if (idx + 1 >= questions.length) {
       setDone(true);
     } else {
@@ -85,6 +63,8 @@ const Quiz = () => {
     setDone(false);
   };
 
+  const q = questions?.[idx];
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -95,10 +75,16 @@ const Quiz = () => {
             <h1 className="mt-2 text-4xl md:text-6xl font-black tracking-tighter">
               How biased are you? <span className="inline-block animate-float">✨</span>
             </h1>
-            <p className="mt-3 text-muted-foreground">A 5-question quiz on countries you think you know.</p>
+            <p className="mt-3 text-muted-foreground">
+              {questions ? `A ${questions.length}-question quiz on countries you think you know.` : " "}
+            </p>
           </div>
 
-          {!done ? (
+          {questions === null ? (
+            <p className="text-center text-muted-foreground">Loading...</p>
+          ) : questions.length === 0 ? (
+            <p className="text-center text-muted-foreground">No quiz questions yet.</p>
+          ) : !done && q ? (
             <div className="bg-white rounded-[2.5rem] shadow-pop p-8 md:p-10">
               <div className="flex items-center justify-between mb-6">
                 <span className="text-xs font-bold text-muted-foreground">
@@ -133,7 +119,7 @@ const Quiz = () => {
                     : "bg-secondary opacity-60";
                   return (
                     <button
-                      key={opt}
+                      key={`${opt}-${i}`}
                       onClick={() => handlePick(i)}
                       disabled={show}
                       className={`w-full text-left px-5 py-4 rounded-2xl font-semibold transition flex items-center justify-between ${cls}`}
@@ -163,17 +149,12 @@ const Quiz = () => {
             </div>
           ) : (
             <div className="bg-white rounded-[2.5rem] shadow-pop p-10 text-center animate-fade-up">
-              <div className="text-6xl mb-4">{score >= 4 ? "🎉" : score >= 2 ? "👏" : "🌱"}</div>
+              <div className="text-6xl mb-4">
+                {score >= questions.length * 0.8 ? "🎉" : score >= questions.length * 0.4 ? "👏" : "🌱"}
+              </div>
               <h2 className="text-3xl md:text-4xl font-black tracking-tighter">
                 You scored {score} / {questions.length}
               </h2>
-              <p className="mt-3 text-muted-foreground">
-                {score >= 4
-                  ? "Impressive — you really see past the stereotypes."
-                  : score >= 2
-                  ? "Not bad — there's always more to learn."
-                  : "Plenty to explore. Start with the articles below."}
-              </p>
               <button
                 onClick={reset}
                 className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-pink text-white font-bold hover:scale-105 transition"
