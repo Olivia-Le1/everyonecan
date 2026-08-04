@@ -28,6 +28,7 @@ export type Database = {
           is_keyword: boolean
           is_published: boolean
           keyword_month: string | null
+          month_id: string | null
           published_at: string
           sort_order: number
           title: string
@@ -35,7 +36,7 @@ export type Database = {
           views: string
         }
         Insert: {
-          category: string
+          category?: string
           category_color?: string
           content?: string
           country_flag: string
@@ -47,6 +48,7 @@ export type Database = {
           is_keyword?: boolean
           is_published?: boolean
           keyword_month?: string | null
+          month_id?: string | null
           published_at?: string
           sort_order?: number
           title: string
@@ -66,11 +68,146 @@ export type Database = {
           is_keyword?: boolean
           is_published?: boolean
           keyword_month?: string | null
+          month_id?: string | null
           published_at?: string
           sort_order?: number
           title?: string
           updated_at?: string
           views?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "articles_month_id_fkey"
+            columns: ["month_id"]
+            isOneToOne: false
+            referencedRelation: "months"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      countries: {
+        Row: {
+          bg: string
+          created_at: string
+          description: string
+          flag: string
+          id: string
+          is_visible: boolean
+          name: string
+          sort_order: number
+          subtitle: string
+          updated_at: string
+        }
+        Insert: {
+          bg?: string
+          created_at?: string
+          description?: string
+          flag?: string
+          id?: string
+          is_visible?: boolean
+          name: string
+          sort_order?: number
+          subtitle?: string
+          updated_at?: string
+        }
+        Update: {
+          bg?: string
+          created_at?: string
+          description?: string
+          flag?: string
+          id?: string
+          is_visible?: boolean
+          name?: string
+          sort_order?: number
+          subtitle?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      months: {
+        Row: {
+          bg: string
+          created_at: string
+          description: string
+          emoji: string
+          id: string
+          is_visible: boolean
+          label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          bg?: string
+          created_at?: string
+          description?: string
+          emoji?: string
+          id?: string
+          is_visible?: boolean
+          label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          bg?: string
+          created_at?: string
+          description?: string
+          emoji?: string
+          id?: string
+          is_visible?: boolean
+          label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          correct_index: number
+          country: string
+          created_at: string
+          explanation: string
+          flag: string
+          id: string
+          is_visible: boolean
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          correct_index?: number
+          country?: string
+          created_at?: string
+          explanation?: string
+          flag?: string
+          id?: string
+          is_visible?: boolean
+          option_a?: string
+          option_b?: string
+          option_c?: string
+          option_d?: string
+          question: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          correct_index?: number
+          country?: string
+          created_at?: string
+          explanation?: string
+          flag?: string
+          id?: string
+          is_visible?: boolean
+          option_a?: string
+          option_b?: string
+          option_c?: string
+          option_d?: string
+          question?: string
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
