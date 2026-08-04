@@ -35,6 +35,8 @@ const App = () => (
             element={<CountryArticles />}
           />
 
+          <Route path="/month/:id" element={<MonthArticles />} />
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </HashRouter>
