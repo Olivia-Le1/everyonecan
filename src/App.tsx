@@ -11,6 +11,7 @@ import Quiz from "./pages/Quiz.tsx";
 import Admin from "./pages/Admin.tsx";
 import ArticleDetail from "./pages/ArticleDetail.tsx";
 import CountryArticles from "./pages/CountryArticles.tsx";
+import MonthArticles from "./pages/MonthArticles.tsx";
 
 const queryClient = new QueryClient();
 
