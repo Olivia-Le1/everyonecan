@@ -603,6 +603,7 @@ const Admin = () => {
               </div>
             ))}
           </div>
+          </>
         )}
 
         {tab === "quiz" && (
