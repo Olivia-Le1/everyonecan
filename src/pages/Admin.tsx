@@ -293,7 +293,8 @@ const Admin = () => {
   const saveCountry = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingCountry) return;
-    const payload = { ...countryForm, sort_order: Number(countryForm.sort_order) || 0 };
+    const { id: _cid, ...rest } = countryForm as any;
+    const payload = { ...rest, sort_order: Number(countryForm.sort_order) || 0 };
     const res = editingCountry.id
       ? await supabase.from("countries").update(payload).eq("id", editingCountry.id)
       : await supabase.from("countries").insert(payload);
