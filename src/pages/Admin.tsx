@@ -334,6 +334,38 @@ const Admin = () => {
     load();
   };
 
+  const MONTH_PRESET = [
+    ["January", "❄️"],
+    ["February", "💌"],
+    ["March", "🌸"],
+    ["April", "🌷"],
+    ["May", "🌿"],
+    ["June", "☀️"],
+    ["July", "🍉"],
+    ["August", "🏖️"],
+    ["September", "🍂"],
+    ["October", "🎃"],
+    ["November", "🍁"],
+    ["December", "🎄"],
+  ] as const;
+
+  const addAllMonths = async () => {
+    const existing = new Set(months.map((m) => m.label.trim().toLowerCase()));
+    const rows = MONTH_PRESET.filter(([label]) => !existing.has(label.toLowerCase())).map(([label, emoji], i) => ({
+      label,
+      emoji,
+      description: "",
+      bg: "bg-butter",
+      sort_order: MONTH_PRESET.findIndex(([l]) => l === label) + 1,
+      is_visible: true,
+    }));
+    if (rows.length === 0) return toast.info("이미 1월~12월 박스가 모두 있습니다");
+    const { error } = await supabase.from("months").insert(rows);
+    if (error) return toast.error(error.message);
+    toast.success(`${rows.length}개의 월 박스를 추가했습니다`);
+    load();
+  };
+
   /* ---------------- quiz ---------------- */
 
   const saveQuiz = async (e: React.FormEvent) => {
