@@ -339,8 +339,9 @@ const Admin = () => {
   const saveQuiz = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingQuiz) return;
+    const { id: _qid, ...qrest } = quizForm as any;
     const payload = {
-      ...quizForm,
+      ...qrest,
       sort_order: Number(quizForm.sort_order) || 0,
       correct_index: Number(quizForm.correct_index) || 0,
     };
