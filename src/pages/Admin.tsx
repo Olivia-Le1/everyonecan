@@ -566,6 +566,15 @@ const Admin = () => {
         )}
 
         {tab === "months" && (
+          <>
+          <div className="mb-5">
+            <button
+              onClick={addAllMonths}
+              className="px-4 py-2.5 rounded-full bg-secondary text-sm font-bold hover:bg-pink-soft transition"
+            >
+              1월~12월 박스 자동 생성
+            </button>
+          </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {months.map((m) => (
               <div key={m.id} className={`rounded-[2rem] p-6 ${m.bg} shadow-soft`}>
