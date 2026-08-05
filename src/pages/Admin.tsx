@@ -198,48 +198,60 @@ const Admin = () => {
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("이미지 파일만 업로드할 수 있습니다");
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("파일 크기는 10MB 이하여야 합니다");
-      return;
-    }
+  if (!file.type.startsWith("image/")) {
+    toast.error("이미지 파일만 업로드할 수 있습니다");
+    return;
+  }
 
-    setUploading(true);
-    try {
-      const ext = file.name.split(".").pop() || "jpg";
-      const path = `articles/${Date.now()}-${Math.random().toString(36).slice(2, 9)}.${ext}`;
+  if (file.size > 10 * 1024 * 1024) {
+    toast.error("파일 크기는 10MB 이하여야 합니다");
+    return;
+  }
 
-      const { error } = await supabase.storage.from("articles").upload(path, file, {
+  setUploading(true);
+
+  try {
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `articles/${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 9)}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from("images")
+      .upload(path, file, {
         upsert: true,
         contentType: file.type,
       });
-      if (error) {
-        toast.error("이미지 업로드 실패: " + error.message);
-        return;
-      }
 
-      const { data: signed, error: signErr } = await supabase.storage
-        .from("articles")
-        .createSignedUrl(path, TEN_YEARS);
-      if (signErr || !signed?.signedUrl) {
-        toast.error("이미지 URL 생성 실패");
-        return;
-      }
-
-      setForm((f) => ({ ...f, image_url: signed.signedUrl }));
-      setPreviewImage(signed.signedUrl);
-      toast.success("이미지 업로드 완료!");
-    } finally {
-      setUploading(false);
-      e.target.value = "";
+    if (error) {
+      toast.error("이미지 업로드 실패: " + error.message);
+      return;
     }
-  };
+
+    const { data: signed, error: signErr } = await supabase.storage
+      .from("images")
+      .createSignedUrl(path, TEN_YEARS);
+
+    if (signErr || !signed?.signedUrl) {
+      toast.error("이미지 URL 생성 실패");
+      return;
+    }
+
+    setForm((f) => ({
+      ...f,
+      image_url: signed.signedUrl,
+    }));
+
+    setPreviewImage(signed.signedUrl);
+    toast.success("이미지 업로드 완료!");
+  } finally {
+    setUploading(false);
+    e.target.value = "";
+  }
+};
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
