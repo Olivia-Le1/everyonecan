@@ -293,7 +293,8 @@ const Admin = () => {
   const saveCountry = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingCountry) return;
-    const payload = { ...countryForm, sort_order: Number(countryForm.sort_order) || 0 };
+    const { id: _cid, ...rest } = countryForm as any;
+    const payload = { ...rest, sort_order: Number(countryForm.sort_order) || 0 };
     const res = editingCountry.id
       ? await supabase.from("countries").update(payload).eq("id", editingCountry.id)
       : await supabase.from("countries").insert(payload);
@@ -315,7 +316,8 @@ const Admin = () => {
   const saveMonth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingMonth) return;
-    const payload = { ...monthForm, sort_order: Number(monthForm.sort_order) || 0 };
+    const { id: _mid, ...mrest } = monthForm as any;
+    const payload = { ...mrest, sort_order: Number(monthForm.sort_order) || 0 };
     const res = editingMonth.id
       ? await supabase.from("months").update(payload).eq("id", editingMonth.id)
       : await supabase.from("months").insert(payload);
@@ -337,8 +339,9 @@ const Admin = () => {
   const saveQuiz = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingQuiz) return;
+    const { id: _qid, ...qrest } = quizForm as any;
     const payload = {
-      ...quizForm,
+      ...qrest,
       sort_order: Number(quizForm.sort_order) || 0,
       correct_index: Number(quizForm.correct_index) || 0,
     };
