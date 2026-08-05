@@ -705,10 +705,10 @@ const Admin = () => {
             <div className="mb-4">
               <label className={label}>본문 (Content — 로그인한 독자에게 표시)</label>
               <textarea
-                rows={18}
+                rows={30}
                 value={form.content}
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
-                className={field + " min-h-[400px] leading-relaxed font-normal"}
+                className={field + " min-h-[600px] leading-relaxed font-normal"}
               />
             </div>
 
