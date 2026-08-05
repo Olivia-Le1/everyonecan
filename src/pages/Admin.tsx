@@ -316,7 +316,8 @@ const Admin = () => {
   const saveMonth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingMonth) return;
-    const payload = { ...monthForm, sort_order: Number(monthForm.sort_order) || 0 };
+    const { id: _mid, ...mrest } = monthForm as any;
+    const payload = { ...mrest, sort_order: Number(monthForm.sort_order) || 0 };
     const res = editingMonth.id
       ? await supabase.from("months").update(payload).eq("id", editingMonth.id)
       : await supabase.from("months").insert(payload);
