@@ -12,6 +12,8 @@ import Admin from "./pages/Admin.tsx";
 import ArticleDetail from "./pages/ArticleDetail.tsx";
 import CountryArticles from "./pages/CountryArticles.tsx";
 import MonthArticles from "./pages/MonthArticles.tsx";
+import AllArticles from "./pages/AllArticles.tsx";
+import AllMonths from "./pages/AllMonths.tsx";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +38,8 @@ const App = () => (
           />
 
           <Route path="/month/:id" element={<MonthArticles />} />
+          <Route path="/articles" element={<AllArticles />} />
+          <Route path="/months" element={<AllMonths />} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>

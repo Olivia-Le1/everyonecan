@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -12,6 +12,42 @@ export interface MonthBox {
   bg: string;
   articles: number;
 }
+
+const MONTH_NUMBERS: Record<string, number> = {
+  january: 1, jan: 1, "1월": 1,
+  february: 2, feb: 2, "2월": 2,
+  march: 3, mar: 3, "3월": 3,
+  april: 4, apr: 4, "4월": 4,
+  may: 5, "5월": 5,
+  june: 6, jun: 6, "6월": 6,
+  july: 7, jul: 7, "7월": 7,
+  august: 8, aug: 8, "8월": 8,
+  september: 9, sep: 9, sept: 9, "9월": 9,
+  october: 10, oct: 10, "10월": 10,
+  november: 11, nov: 11, "11월": 11,
+  december: 12, dec: 12, "12월": 12,
+};
+
+const monthNumber = (label: string) => {
+  const key = label.trim().toLowerCase();
+  if (MONTH_NUMBERS[key]) return MONTH_NUMBERS[key];
+  const digits = key.match(/\d{1,2}/);
+  return digits ? Number(digits[0]) : 0;
+};
+
+// 현재 계절에 해당하는 달들만 노출
+const SEASONS: number[][] = [
+  [12, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [9, 10, 11],
+];
+
+const currentSeasonMonths = () => {
+  const m = new Date().getMonth() + 1;
+  return SEASONS.find((s) => s.includes(m)) ?? [];
+};
+
 
 export const Months = () => {
   const { t } = useSiteSettings();
@@ -34,16 +70,19 @@ export const Months = () => {
         if (a.month_id) counts.set(a.month_id, (counts.get(a.month_id) ?? 0) + 1);
       });
 
-      setMonths(
-        (rows ?? []).map((m: any) => ({
-          id: m.id,
-          label: m.label,
-          emoji: m.emoji || "🗓️",
-          description: m.description ?? "",
-          bg: m.bg || "bg-butter",
-          articles: counts.get(m.id) ?? 0,
-        }))
-      );
+      const all: MonthBox[] = (rows ?? []).map((m: any) => ({
+        id: m.id,
+        label: m.label,
+        emoji: m.emoji || "🗓️",
+        description: m.description ?? "",
+        bg: m.bg || "bg-butter",
+        articles: counts.get(m.id) ?? 0,
+      }));
+
+      const season = currentSeasonMonths();
+      const inSeason = all.filter((m) => season.includes(monthNumber(m.label)));
+
+      setMonths(inSeason.length > 0 ? inSeason : all.slice(0, 4));
     };
 
     void load();
@@ -57,14 +96,22 @@ export const Months = () => {
         <span className="text-xs font-bold uppercase tracking-widest text-pink">
           {t("months_eyebrow", "Monthly")}
         </span>
-        <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance">
+        <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance flex items-center gap-3 flex-wrap">
           {t("months_title", "Keyword of the month")}{" "}
           <span className="inline-block animate-float">🔑</span>
+          <Link
+            to="/months"
+            aria-label="See every month"
+            className="size-11 shrink-0 rounded-full bg-white shadow-soft grid place-items-center hover:scale-110 hover:text-pink transition"
+          >
+            <ArrowRight className="size-5" />
+          </Link>
         </h2>
         <p className="mt-3 text-muted-foreground max-w-xl">
           {t("months_subtitle", "One idea we keep coming back to, month by month.")}
         </p>
       </div>
+
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         {months.map((m) => (

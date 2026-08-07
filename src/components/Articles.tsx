@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { ArticleCard, type Article } from "./ArticleCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -80,13 +82,21 @@ export const Articles = () => {
         <span className="text-xs font-bold uppercase tracking-widest text-pink">
           {t("articles_eyebrow", "Trending Now")}
         </span>
-        <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance">
+        <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance flex items-center gap-3 flex-wrap">
           {t("articles_title", "Today's top stories")} <span className="inline-block animate-float">🔥</span>
+          <Link
+            to="/articles"
+            aria-label="See all stories"
+            className="size-11 shrink-0 rounded-full bg-white shadow-soft grid place-items-center hover:scale-110 hover:text-pink transition"
+          >
+            <ArrowRight className="size-5" />
+          </Link>
         </h2>
         <p className="mt-3 text-muted-foreground max-w-xl">
           {t("articles_subtitle", "The most-read bias-busting reads this week.")}
         </p>
       </div>
+
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {items.map((a) => (

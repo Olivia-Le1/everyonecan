@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ArticleEngagement } from "@/components/ArticleEngagement";
@@ -31,11 +32,29 @@ const ArticleDetail = () => {
   return (
     <main className="container py-20">
 
+      <div className="mb-6 flex items-center justify-between">
+        <button
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-soft font-bold text-sm hover:scale-105 transition"
+        >
+          <ArrowLeft className="size-4" /> Back
+        </button>
+        <button
+          onClick={() => navigate("/")}
+          aria-label="Close article"
+          className="size-10 rounded-full bg-white shadow-soft grid place-items-center hover:scale-110 hover:text-pink transition"
+        >
+          <X className="size-5" />
+        </button>
+      </div>
+
       <img
         src={article.image_url}
         alt={article.title}
         className="w-full max-w-4xl rounded-3xl"
       />
+
 
       <h1 className="mt-8 text-4xl font-black">
         {article.title}
