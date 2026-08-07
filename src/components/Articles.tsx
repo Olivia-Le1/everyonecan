@@ -24,24 +24,44 @@ export const Articles = () => {
   const { t } = useSiteSettings();
 
   useEffect(() => {
-    supabase
-      .from("articles")
-      .select("*")
-      .eq("is_published", true)
-      .order("sort_order", { ascending: true })
-      .order("published_at", { ascending: false })
-      .then(({ data }) => {
-        const mapped: Article[] = (data ?? []).map((a: any) => ({
-          id: a.id,
-          image: fallbackImages[a.image_url] ?? a.image_url,
-          category: a.category ? `${a.country_flag} ${a.category}` : `${a.country_flag} ${a.country_name}`,
-          categoryColor: a.category_color,
-          title: a.title,
-          description: a.description,
-        }));
-        setItems(mapped);
-        setLoading(false);
+    const load = async () => {
+      const [{ data }, { data: likes }] = await Promise.all([
+        supabase.from("articles").select("*").eq("is_published", true),
+        supabase.from("article_likes").select("article_id"),
+      ]);
+
+      const likeCount = new Map<string, number>();
+      (likes ?? []).forEach((l: any) => {
+        likeCount.set(l.article_id, (likeCount.get(l.article_id) ?? 0) + 1);
       });
+
+      const scored = (data ?? []).map((a: any) => ({
+        raw: a,
+        likes: likeCount.get(a.id) ?? 0,
+        views: parseInt(String(a.views).replace(/[^0-9]/g, "")) || 0,
+      }));
+
+      scored.sort(
+        (x, y) =>
+          y.likes - x.likes ||
+          y.views - x.views ||
+          x.raw.sort_order - y.raw.sort_order ||
+          new Date(y.raw.published_at).getTime() - new Date(x.raw.published_at).getTime()
+      );
+
+      const mapped: Article[] = scored.slice(0, 4).map(({ raw: a }) => ({
+        id: a.id,
+        image: fallbackImages[a.image_url] ?? a.image_url,
+        category: a.category ? `${a.country_flag} ${a.category}` : `${a.country_flag} ${a.country_name}`,
+        categoryColor: a.category_color,
+        title: a.title,
+        description: a.description,
+      }));
+
+      setItems(mapped);
+      setLoading(false);
+    };
+    load();
   }, []);
 
   if (loading) {
@@ -68,7 +88,7 @@ export const Articles = () => {
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {items.map((a) => (
           <ArticleCard key={a.id} a={a} />
         ))}

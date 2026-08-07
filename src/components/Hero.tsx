@@ -42,32 +42,6 @@ export const Hero = () => {
             </Link>
           </div>
 
-          <div className="mt-10 flex items-center gap-6 text-sm text-muted-foreground">
-            <div>
-              <span className="text-2xl font-black text-foreground">
-                {articlesCount}
-              </span>{" "}
-              articles
-            </div>
-
-            <div className="h-8 w-px bg-border" />
-
-            <div>
-              <span className="text-2xl font-black text-foreground">
-                {countriesCount}
-              </span>{" "}
-              countries
-            </div>
-
-            <div className="h-8 w-px bg-border" />
-
-            <div>
-              <span className="text-2xl font-black text-foreground">
-                {readersCount}
-              </span>{" "}
-              readers
-            </div>
-          </div>
         </div>
 
         <div className="relative animate-fade-up [animation-delay:200ms]">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { ArticleEngagement } from "@/components/ArticleEngagement";
 
 const ArticleDetail = () => {
   const { id } = useParams();
@@ -68,6 +69,8 @@ const ArticleDetail = () => {
           </button>
         </div>
       )}
+
+      <ArticleEngagement articleId={article.id} />
 
     </main>
   );
