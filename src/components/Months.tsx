@@ -70,16 +70,19 @@ export const Months = () => {
         if (a.month_id) counts.set(a.month_id, (counts.get(a.month_id) ?? 0) + 1);
       });
 
-      setMonths(
-        (rows ?? []).map((m: any) => ({
-          id: m.id,
-          label: m.label,
-          emoji: m.emoji || "🗓️",
-          description: m.description ?? "",
-          bg: m.bg || "bg-butter",
-          articles: counts.get(m.id) ?? 0,
-        }))
-      );
+      const all: MonthBox[] = (rows ?? []).map((m: any) => ({
+        id: m.id,
+        label: m.label,
+        emoji: m.emoji || "🗓️",
+        description: m.description ?? "",
+        bg: m.bg || "bg-butter",
+        articles: counts.get(m.id) ?? 0,
+      }));
+
+      const season = currentSeasonMonths();
+      const inSeason = all.filter((m) => season.includes(monthNumber(m.label)));
+
+      setMonths(inSeason.length > 0 ? inSeason : all.slice(0, 4));
     };
 
     void load();
@@ -93,14 +96,22 @@ export const Months = () => {
         <span className="text-xs font-bold uppercase tracking-widest text-pink">
           {t("months_eyebrow", "Monthly")}
         </span>
-        <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance">
+        <h2 className="mt-2 text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-balance flex items-center gap-3 flex-wrap">
           {t("months_title", "Keyword of the month")}{" "}
           <span className="inline-block animate-float">🔑</span>
+          <Link
+            to="/months"
+            aria-label="See every month"
+            className="size-11 shrink-0 rounded-full bg-white shadow-soft grid place-items-center hover:scale-110 hover:text-pink transition"
+          >
+            <ArrowRight className="size-5" />
+          </Link>
         </h2>
         <p className="mt-3 text-muted-foreground max-w-xl">
           {t("months_subtitle", "One idea we keep coming back to, month by month.")}
         </p>
       </div>
+
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         {months.map((m) => (
