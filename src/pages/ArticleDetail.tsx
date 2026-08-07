@@ -69,6 +69,8 @@ const ArticleDetail = () => {
         </div>
       )}
 
+      <ArticleEngagement articleId={article.id} />
+
     </main>
   );
 };
